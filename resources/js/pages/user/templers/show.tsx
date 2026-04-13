@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ArrowLeft, Pencil, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import type { Templer } from '@/types/templer';
 import { useState } from 'react';
@@ -51,7 +51,8 @@ export default function ShowTempler({ templer }: Props) {
                                         />
                                     </button>
                                 </DialogTrigger>
-                                <DialogContent className="!fixed !inset-2 !translate-x-0 !translate-y-0 !top-2 !left-2 !w-[calc(100vw-1rem)] !h-[calc(100vh-1rem)] !max-w-none !max-h-none !rounded-lg !border-none !p-4 !gap-2">
+                                <DialogContent aria-describedby={undefined} className="!fixed !inset-2 !translate-x-0 !translate-y-0 !top-2 !left-2 !w-[calc(100vw-1rem)] !h-[calc(100vh-1rem)] !max-w-none !max-h-none !rounded-lg !border-none !p-4 !gap-2">
+                                    <DialogTitle className="sr-only">{templer.title}</DialogTitle>
                                     <div className="flex items-center gap-2 pr-8">
                                         <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setZoom((z) => Math.min(z + 0.25, 3))}>
                                             <ZoomIn className="h-4 w-4" />

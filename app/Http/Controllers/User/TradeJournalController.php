@@ -168,10 +168,13 @@ class TradeJournalController extends Controller
             'hft_entry_image' => ['nullable', 'image', 'max:5120'],
             'mft_entry_image' => ['nullable', 'image', 'max:5120'],
             'lft_entry_image' => ['nullable', 'image', 'max:5120'],
+            'remove_hft_entry_image' => ['nullable'],
+            'remove_mft_entry_image' => ['nullable'],
+            'remove_lft_entry_image' => ['nullable'],
             'red_news_time' => ['nullable', 'string', 'max:100'],
         ]);
 
-        // Handle image uploads
+        // Handle image uploads and removals
         foreach (['hft_entry_image', 'mft_entry_image', 'lft_entry_image'] as $imageField) {
             if ($request->hasFile($imageField)) {
                 // Delete old image if exists
@@ -182,9 +185,16 @@ class TradeJournalController extends Controller
                 $filename = time() . '_' . $imageField . '_' . $file->hashName();
                 $file->move(public_path('uploads/trade-journals'), $filename);
                 $validated[$imageField] = 'uploads/trade-journals/' . $filename;
+            } elseif (filter_var($request->input("remove_{$imageField}"), FILTER_VALIDATE_BOOLEAN)) {
+                // User explicitly removed the image
+                if ($tradeJournal->$imageField && file_exists(public_path($tradeJournal->$imageField))) {
+                    unlink(public_path($tradeJournal->$imageField));
+                }
+                $validated[$imageField] = null;
             } else {
                 unset($validated[$imageField]);
             }
+            unset($validated["remove_{$imageField}"]);
         }
 
         // Reverse old balance adjustment

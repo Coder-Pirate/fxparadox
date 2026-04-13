@@ -14,8 +14,18 @@ import {
 import {
     Dialog,
     DialogContent,
+    DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import type { TradeJournal, PaginatedData } from '@/types/trade-journal';
 
@@ -104,9 +114,13 @@ export default function TradeJournalIndex({ journals, filters, availablePairs, a
 
     const hasFilters = search || pair || session || result || direction || dateFrom || dateTo;
 
-    function handleDelete(id: number) {
-        if (confirm('Are you sure you want to delete this trade entry?')) {
-            router.delete(`/user/trade-journals/${id}`);
+    const [deleteId, setDeleteId] = useState<number | null>(null);
+
+    function confirmDelete() {
+        if (deleteId) {
+            router.delete(`/user/trade-journals/${deleteId}`, {
+                onFinish: () => setDeleteId(null),
+            });
         }
     }
 
@@ -307,7 +321,7 @@ export default function TradeJournalIndex({ journals, filters, availablePairs, a
                                                                 <Pencil className="h-4 w-4" />
                                                             </Button>
                                                         </Link>
-                                                        <Button variant="ghost" size="icon" onClick={() => handleDelete(journal.id)}>
+                                                        <Button variant="ghost" size="icon" onClick={() => setDeleteId(journal.id)}>
                                                             <Trash2 className="h-4 w-4 text-red-500" />
                                                         </Button>
                                                     </div>
@@ -342,6 +356,24 @@ export default function TradeJournalIndex({ journals, filters, availablePairs, a
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Delete Confirmation Dialog */}
+            <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogTitle>
+                        Are you sure you want to delete this trade entry?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Once deleted, this trade journal entry and its associated images will be permanently removed. This action cannot be undone.
+                    </AlertDialogDescription>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDelete}>
+                            Delete trade
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }
@@ -371,7 +403,8 @@ function ImagePreview({ src, label }: { src: string; label: string }) {
                     {label}
                 </button>
             </DialogTrigger>
-            <DialogContent className="!fixed !inset-2 !translate-x-0 !translate-y-0 !top-2 !left-2 !w-[calc(100vw-1rem)] !h-[calc(100vh-1rem)] !max-w-none !max-h-none !rounded-lg !border-none !p-4 !gap-2 flex flex-col">
+            <DialogContent aria-describedby={undefined} className="!fixed !inset-2 !translate-x-0 !translate-y-0 !top-2 !left-2 !w-[calc(100vw-1rem)] !h-[calc(100vh-1rem)] !max-w-none !max-h-none !rounded-lg !border-none !p-4 !gap-2 flex flex-col">
+                <DialogTitle className="sr-only">{label} Entry</DialogTitle>
                 <div className="flex items-center justify-between pb-2 pr-8">
                     <span className="text-sm font-medium">{label} Entry</span>
                     <div className="flex items-center gap-2">

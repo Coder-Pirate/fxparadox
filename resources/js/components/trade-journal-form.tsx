@@ -46,6 +46,9 @@ type TradeJournalFormData = {
     hft_entry_image: File | null;
     mft_entry_image: File | null;
     lft_entry_image: File | null;
+    remove_hft_entry_image: boolean;
+    remove_mft_entry_image: boolean;
+    remove_lft_entry_image: boolean;
     red_news_time: string;
 };
 
@@ -72,12 +75,14 @@ export default function TradeJournalForm({ journal, submitUrl, pairs, sessions, 
     });
 
     function handleImageChange(field: 'hft_entry_image' | 'mft_entry_image' | 'lft_entry_image', file: File | null) {
-        setData(field, file);
         const key = field.replace('_entry_image', '') as 'hft' | 'mft' | 'lft';
+        const removeField = `remove_${field}` as 'remove_hft_entry_image' | 'remove_mft_entry_image' | 'remove_lft_entry_image';
         if (file) {
+            setData((prev) => ({ ...prev, [field]: file, [removeField]: false }));
             const url = URL.createObjectURL(file);
             setPreviews((prev) => ({ ...prev, [key]: url }));
         } else {
+            setData((prev) => ({ ...prev, [field]: null, [removeField]: true }));
             setPreviews((prev) => ({ ...prev, [key]: null }));
         }
     }
@@ -100,6 +105,9 @@ export default function TradeJournalForm({ journal, submitUrl, pairs, sessions, 
         hft_entry_image: null,
         mft_entry_image: null,
         lft_entry_image: null,
+        remove_hft_entry_image: false,
+        remove_mft_entry_image: false,
+        remove_lft_entry_image: false,
         red_news_time: journal?.red_news_time ?? '',
     });
 
@@ -318,7 +326,8 @@ export default function TradeJournalForm({ journal, submitUrl, pairs, sessions, 
                             const field = `${key}_entry_image` as 'hft_entry_image' | 'mft_entry_image' | 'lft_entry_image';
                             const ref = key === 'hft' ? hftImageRef : key === 'mft' ? mftImageRef : lftImageRef;
                             const label = `${key.toUpperCase()} Entry Image`;
-                            const previewSrc = previews[key] ?? (journal?.[field] && !data[field] ? `/${journal[field]}` : null);
+                            const removeField = `remove_${field}` as 'remove_hft_entry_image' | 'remove_mft_entry_image' | 'remove_lft_entry_image';
+                            const previewSrc = previews[key] ?? (!data[removeField] && journal?.[field] ? `/${journal[field]}` : null);
 
                             return (
                                 <div key={key} className="space-y-2">

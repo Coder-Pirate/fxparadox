@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import {
     Dialog,
     DialogContent,
+    DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
 import type { TradeJournal } from '@/types/trade-journal';
@@ -170,7 +171,8 @@ function ImageCard({ src, label }: { src: string; label: string }) {
                         className="h-48 w-full cursor-pointer rounded-lg border object-cover transition-opacity hover:opacity-80"
                     />
                 </DialogTrigger>
-                <DialogContent className="!fixed !inset-2 !translate-x-0 !translate-y-0 !top-2 !left-2 !w-[calc(100vw-1rem)] !h-[calc(100vh-1rem)] !max-w-none !max-h-none !rounded-lg !border-none !p-4 !gap-2 flex flex-col">
+                <DialogContent aria-describedby={undefined} className="!fixed !inset-2 !translate-x-0 !translate-y-0 !top-2 !left-2 !w-[calc(100vw-1rem)] !h-[calc(100vh-1rem)] !max-w-none !max-h-none !rounded-lg !border-none !p-4 !gap-2 flex flex-col">
+                    <DialogTitle className="sr-only">{label}</DialogTitle>
                     <div className="flex items-center justify-between pb-2 pr-8">
                         <span className="text-sm font-medium">{label}</span>
                         <div className="flex items-center gap-2">
