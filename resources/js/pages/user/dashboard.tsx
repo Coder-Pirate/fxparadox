@@ -188,7 +188,7 @@ export default function UserDashboard({ stats: rawStats, accounts = [], dailySum
                 {/* Daily Summary Calendar */}
                 <Card>
                     <CardHeader>
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <CardTitle className="text-lg">Daily Summary</CardTitle>
                             <div className="flex items-center gap-2">
                                 <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => navigateMonth('prev')}>
@@ -207,7 +207,7 @@ export default function UserDashboard({ stats: rawStats, accounts = [], dailySum
                     </CardHeader>
                     <CardContent>
                         {/* Day headers */}
-                        <div className="grid grid-cols-7 text-center text-sm font-medium text-muted-foreground">
+                        <div className="grid grid-cols-7 text-center text-xs sm:text-sm font-medium text-muted-foreground">
                             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
                                 <div key={d} className="border-b py-2">
                                     {d}
@@ -226,7 +226,7 @@ export default function UserDashboard({ stats: rawStats, accounts = [], dailySum
                                     <div
                                         key={i}
                                         onClick={() => cell.summary && setSelectedDay(cell.summary)}
-                                        className={`relative min-h-[100px] border-b border-r p-2 ${
+                                        className={`relative min-h-[60px] sm:min-h-[100px] border-b border-r p-1 sm:p-2 ${
                                             i % 7 === 0 ? 'border-l' : ''
                                         } ${cell.day === null ? 'bg-muted/30' : ''} ${
                                             hasProfit ? 'bg-green-50 dark:bg-green-950/30' : ''
@@ -237,7 +237,7 @@ export default function UserDashboard({ stats: rawStats, accounts = [], dailySum
                                         {cell.day !== null && (
                                             <>
                                                 <span
-                                                    className={`text-sm ${
+                                                    className={`text-xs sm:text-sm ${
                                                         isToday
                                                             ? 'inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold'
                                                             : 'text-foreground'
@@ -249,13 +249,13 @@ export default function UserDashboard({ stats: rawStats, accounts = [], dailySum
                                                 </span>
 
                                                 {cell.summary && (
-                                                    <div className="mt-4 flex flex-col items-center gap-0.5">
-                                                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                    <div className="mt-2 sm:mt-4 flex flex-col items-center gap-0.5">
+                                                        <div className="hidden sm:flex items-center gap-1 text-xs text-muted-foreground">
                                                             <span>{cell.summary.total_trades}</span>
                                                             <ArrowRightLeft className="h-3 w-3" />
                                                         </div>
                                                         <span
-                                                            className={`text-xs font-semibold ${
+                                                            className={`text-[10px] sm:text-xs font-semibold ${
                                                                 cell.summary.net >= 0
                                                                     ? 'text-green-600 dark:text-green-400'
                                                                     : 'text-red-600 dark:text-red-400'
