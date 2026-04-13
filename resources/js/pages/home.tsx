@@ -49,7 +49,7 @@ export default function Home() {
 
     return (
         <>
-            <Head title={hero.title ?? 'FX Paradox'} />
+            <Head title={hero.title ?? 'Home'} />
             <div className="min-h-screen bg-background text-foreground">
                 {/* Navbar */}
                 <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
