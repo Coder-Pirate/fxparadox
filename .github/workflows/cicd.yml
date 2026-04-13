@@ -84,17 +84,17 @@ jobs:
       #       rm -rf /var/www/html/fxparadox/bootstrap/cache/*.php
       #       rm -rf /var/www/html/fxparadox/database/migrations/*.php
 
-      # - name: Backup production .env
-      #   uses: appleboy/ssh-action@v0.1.6
-      #   with:
-      #     host: ${{ secrets.VPS_HOST }}
-      #     username: ${{ secrets.VPS_USER }}
-      #     password: ${{ secrets.VPS_PASSWORD }}
-      #     script: |
-      #       cp /var/www/html/ordercheker/.env /tmp/.env.production.backup 2>/dev/null || true
+      - name: Backup production .env
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            cp /var/www/html/ordercheker/.env /tmp/.env.production.backup 2>/dev/null || true
 
-      # - name: Remove CI .env before deploy
-      #   run: rm -f .env
+      - name: Remove CI .env before deploy
+        run: rm -f .env
 
       - name: Synchronize Files To Server
         uses: appleboy/scp-action@v0.1.1
