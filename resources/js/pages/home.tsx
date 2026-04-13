@@ -311,7 +311,7 @@ export default function Home() {
                                 </div>
                                 <span className="font-semibold">FX Paradox</span>
                             </div>
-                            <div className="flex items-center gap-4">
+                            <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
                                 {canInstall && (
                                     <button
                                         onClick={handleInstall}
@@ -321,7 +321,7 @@ export default function Home() {
                                         Get App
                                     </button>
                                 )}
-                                <p className="text-xs text-muted-foreground sm:text-sm">
+                                <p className="text-center text-xs text-muted-foreground sm:text-sm">
                                     {footer.copyright ?? `© ${new Date().getFullYear()} FX Paradox. All rights reserved.`}
                                 </p>
                             </div>
