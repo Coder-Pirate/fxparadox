@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 440" fill="none">
+  <rect width="600" height="440" rx="20" fill="#f0f9ff"/>
+  <rect x="30" y="30" width="540" height="60" rx="12" fill="#ffffff" stroke="#e0f2fe" stroke-width="1.5"/>
+  <circle cx="60" cy="60" r="16" fill="#0ea5e9" opacity="0.15"/>
+  <path d="M54 64l4-8 4 4 6-10" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="90" y="56" font-family="system-ui,sans-serif" font-size="11" fill="#64748b">Account Balance</text>
+  <text x="90" y="72" font-family="system-ui,sans-serif" font-size="18" font-weight="bold" fill="#0f172a">$24,580.00</text>
+  <rect x="420" y="42" width="80" height="28" rx="6" fill="#22c55e" opacity="0.12"/>
+  <text x="435" y="61" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#16a34a">+12.5%</text>
+  <rect x="30" y="110" width="260" height="140" rx="12" fill="#ffffff" stroke="#e0f2fe" stroke-width="1.5"/>
+  <text x="50" y="138" font-family="system-ui,sans-serif" font-size="11" fill="#64748b">Win Rate</text>
+  <text x="50" y="162" font-family="system-ui,sans-serif" font-size="28" font-weight="bold" fill="#0f172a">68.5%</text>
+  <rect x="50" y="180" width="220" height="50" rx="8" fill="#f8fafc"/>
+  <rect x="60" y="210" width="28" height="14" rx="3" fill="#22c55e" opacity="0.7"/>
+  <rect x="94" y="200" width="28" height="24" rx="3" fill="#22c55e" opacity="0.8"/>
+  <rect x="128" y="206" width="28" height="18" rx="3" fill="#ef4444" opacity="0.6"/>
+  <rect x="162" y="195" width="28" height="29" rx="3" fill="#22c55e" opacity="0.9"/>
+  <rect x="196" y="202" width="28" height="22" rx="3" fill="#22c55e" opacity="0.7"/>
+  <rect x="230" y="192" width="28" height="32" rx="3" fill="#22c55e"/>
+  <rect x="310" y="110" width="260" height="140" rx="12" fill="#ffffff" stroke="#e0f2fe" stroke-width="1.5"/>
+  <text x="330" y="138" font-family="system-ui,sans-serif" font-size="11" fill="#64748b">Monthly P&amp;L</text>
+  <text x="330" y="162" font-family="system-ui,sans-serif" font-size="28" font-weight="bold" fill="#16a34a">+$3,240</text>
+  <polyline points="340,220 370,210 400,215 430,195 460,200 490,185 520,178 550,170" stroke="#0ea5e9" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="550" cy="170" r="4" fill="#0ea5e9"/>
+  <rect x="30" y="270" width="540" height="145" rx="12" fill="#ffffff" stroke="#e0f2fe" stroke-width="1.5"/>
+  <text x="50" y="298" font-family="system-ui,sans-serif" font-size="11" fill="#64748b">Recent Trades</text>
+  <rect x="50" y="312" width="500" height="1" fill="#f1f5f9"/>
+  <text x="50" y="335" font-family="system-ui,sans-serif" font-size="12" fill="#0f172a">EUR/USD</text>
+  <text x="180" y="335" font-family="system-ui,sans-serif" font-size="12" fill="#64748b">Long</text>
+  <text x="300" y="335" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#16a34a">+$180.00</text>
+  <rect x="440" y="322" width="56" height="22" rx="4" fill="#22c55e" opacity="0.12"/>
+  <text x="449" y="337" font-family="system-ui,sans-serif" font-size="10" font-weight="600" fill="#16a34a">PROFIT</text>
+  <rect x="50" y="348" width="500" height="1" fill="#f1f5f9"/>
+  <text x="50" y="371" font-family="system-ui,sans-serif" font-size="12" fill="#0f172a">GBP/JPY</text>
+  <text x="180" y="371" font-family="system-ui,sans-serif" font-size="12" fill="#64748b">Short</text>
+  <text x="300" y="371" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#ef4444">-$65.00</text>
+  <rect x="440" y="358" width="44" height="22" rx="4" fill="#ef4444" opacity="0.12"/>
+  <text x="449" y="373" font-family="system-ui,sans-serif" font-size="10" font-weight="600" fill="#ef4444">LOSS</text>
+  <rect x="50" y="384" width="500" height="1" fill="#f1f5f9"/>
+  <text x="50" y="405" font-family="system-ui,sans-serif" font-size="12" fill="#0f172a">USD/CHF</text>
+  <text x="180" y="405" font-family="system-ui,sans-serif" font-size="12" fill="#64748b">Long</text>
+  <text x="300" y="405" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#16a34a">+$320.00</text>
+  <rect x="440" y="392" width="56" height="22" rx="4" fill="#22c55e" opacity="0.12"/>
+  <text x="449" y="407" font-family="system-ui,sans-serif" font-size="10" font-weight="600" fill="#16a34a">PROFIT</text>
+</svg>

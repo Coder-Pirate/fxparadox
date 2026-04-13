@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ExportUsersController;
+use App\Http\Controllers\Admin\SiteContentController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Manager\DashboardController as ManagerDashboardController;
 use App\Http\Controllers\User\AccountBalanceController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
@@ -15,9 +17,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
-Route::inertia('/', 'welcome', [
-    'canRegister' => Features::enabled(Features::registration()),
-])->name('home');
+Route::get('/', HomeController::class)->name('home');
 
 // Pending approval page (authenticated but not approved)
 Route::middleware(['auth'])->get('approval/pending', function () {
@@ -49,6 +49,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::post('users/{user}/reject', [\App\Http\Controllers\Admin\UserApprovalController::class, 'reject'])->name('users.reject');
     Route::post('users/{user}/activate', [\App\Http\Controllers\Admin\UserApprovalController::class, 'activate'])->name('users.activate');
     Route::post('users/{user}/deactivate', [\App\Http\Controllers\Admin\UserApprovalController::class, 'deactivate'])->name('users.deactivate');
+    Route::get('site-content', [SiteContentController::class, 'index'])->name('site-content.index');
+    Route::post('site-content', [SiteContentController::class, 'update'])->name('site-content.update');
 });
 
 // Manager routes

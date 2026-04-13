@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" fill="none">
+  <rect width="600" height="400" rx="20" fill="#f0f9ff"/>
+  <rect x="30" y="30" width="540" height="340" rx="14" fill="#ffffff" stroke="#e0f2fe" stroke-width="1.5"/>
+  <text x="55" y="65" font-family="system-ui,sans-serif" font-size="14" font-weight="bold" fill="#0f172a">Performance Overview</text>
+  <text x="55" y="85" font-family="system-ui,sans-serif" font-size="11" fill="#64748b">Last 30 days trading activity</text>
+  <rect x="430" y="48" width="60" height="24" rx="6" fill="#0ea5e9" opacity="0.1"/>
+  <text x="440" y="65" font-family="system-ui,sans-serif" font-size="10" font-weight="600" fill="#0ea5e9">30 Days</text>
+  <line x1="55" y1="100" x2="545" y2="100" stroke="#f1f5f9" stroke-width="1"/>
+  <rect x="55" y="115" width="150" height="80" rx="10" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/>
+  <text x="75" y="142" font-family="system-ui,sans-serif" font-size="10" fill="#64748b">Total Profit</text>
+  <text x="75" y="170" font-family="system-ui,sans-serif" font-size="22" font-weight="bold" fill="#16a34a">+$4,820</text>
+  <rect x="225" y="115" width="150" height="80" rx="10" fill="#fefce8" stroke="#fef08a" stroke-width="1"/>
+  <text x="245" y="142" font-family="system-ui,sans-serif" font-size="10" fill="#64748b">Win Rate</text>
+  <text x="245" y="170" font-family="system-ui,sans-serif" font-size="22" font-weight="bold" fill="#ca8a04">72.4%</text>
+  <rect x="395" y="115" width="150" height="80" rx="10" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+  <text x="415" y="142" font-family="system-ui,sans-serif" font-size="10" fill="#64748b">Total Trades</text>
+  <text x="415" y="170" font-family="system-ui,sans-serif" font-size="22" font-weight="bold" fill="#2563eb">58</text>
+  <text x="55" y="225" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#0f172a">Equity Curve</text>
+  <polyline points="55,340 95,330 135,320 175,325 215,305 255,310 295,290 335,280 375,275 415,260 455,250 495,240 535,230" stroke="#0ea5e9" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M55,340 L95,330 L135,320 L175,325 L215,305 L255,310 L295,290 L335,280 L375,275 L415,260 L455,250 L495,240 L535,230 L545,230 L545,350 L55,350 Z" fill="#0ea5e9" opacity="0.06"/>
+  <circle cx="535" cy="230" r="4" fill="#0ea5e9"/>
+  <line x1="55" y1="350" x2="545" y2="350" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="55" y="366" font-family="system-ui,sans-serif" font-size="9" fill="#94a3b8">Jan</text>
+  <text x="175" y="366" font-family="system-ui,sans-serif" font-size="9" fill="#94a3b8">Feb</text>
+  <text x="295" y="366" font-family="system-ui,sans-serif" font-size="9" fill="#94a3b8">Mar</text>
+  <text x="415" y="366" font-family="system-ui,sans-serif" font-size="9" fill="#94a3b8">Apr</text>
+  <text x="525" y="366" font-family="system-ui,sans-serif" font-size="9" fill="#94a3b8">May</text>
+</svg>
