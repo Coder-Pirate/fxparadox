@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, BookText, FolderGit2, LayoutGrid, Shield, Users, UserCheck, Settings2 } from 'lucide-react';
+import { BookOpen, BookText, FolderGit2, LayoutGrid, Shield, Users, UserCheck, Settings2, FileImage } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -31,6 +31,7 @@ function getNavItems(role: UserRole): NavItem[] {
             return [
                 { title: 'Dashboard', href: '/user/dashboard', icon: LayoutGrid },
                 { title: 'Trade Journal', href: '/user/trade-journals', icon: BookText },
+                { title: 'Templers', href: '/user/templers', icon: FileImage },
                 { title: 'Trading Settings', href: '/user/trading-settings', icon: Settings2 },
             ];
     }

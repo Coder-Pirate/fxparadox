@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { ImagePlus, X } from 'lucide-react';
 import {
     Select,
     SelectContent,
@@ -313,63 +314,55 @@ export default function TradeJournalForm({ journal, submitUrl, pairs, sessions, 
 
                     {/* Row 5: Image Uploads */}
                     <div className="grid gap-4 sm:grid-cols-3">
-                        <div className="space-y-2">
-                            <Label htmlFor="hft_entry_image">HFT Entry Image</Label>
-                            <Input
-                                id="hft_entry_image"
-                                type="file"
-                                accept="image/*"
-                                ref={hftImageRef}
-                                onChange={(e) => handleImageChange('hft_entry_image', e.target.files?.[0] ?? null)}
-                            />
-                            {(previews.hft || (journal?.hft_entry_image && !data.hft_entry_image)) && (
-                                <img
-                                    src={previews.hft ?? `/${journal!.hft_entry_image}`}
-                                    alt="HFT preview"
-                                    className="mt-1 h-32 w-full rounded border object-cover cursor-pointer"
-                                    onClick={() => window.open(previews.hft ?? `/${journal!.hft_entry_image}`, '_blank')}
-                                />
-                            )}
-                            <InputError message={errors.hft_entry_image} />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="mft_entry_image">MFT Entry Image</Label>
-                            <Input
-                                id="mft_entry_image"
-                                type="file"
-                                accept="image/*"
-                                ref={mftImageRef}
-                                onChange={(e) => handleImageChange('mft_entry_image', e.target.files?.[0] ?? null)}
-                            />
-                            {(previews.mft || (journal?.mft_entry_image && !data.mft_entry_image)) && (
-                                <img
-                                    src={previews.mft ?? `/${journal!.mft_entry_image}`}
-                                    alt="MFT preview"
-                                    className="mt-1 h-32 w-full rounded border object-cover cursor-pointer"
-                                    onClick={() => window.open(previews.mft ?? `/${journal!.mft_entry_image}`, '_blank')}
-                                />
-                            )}
-                            <InputError message={errors.mft_entry_image} />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="lft_entry_image">LFT Entry Image</Label>
-                            <Input
-                                id="lft_entry_image"
-                                type="file"
-                                accept="image/*"
-                                ref={lftImageRef}
-                                onChange={(e) => handleImageChange('lft_entry_image', e.target.files?.[0] ?? null)}
-                            />
-                            {(previews.lft || (journal?.lft_entry_image && !data.lft_entry_image)) && (
-                                <img
-                                    src={previews.lft ?? `/${journal!.lft_entry_image}`}
-                                    alt="LFT preview"
-                                    className="mt-1 h-32 w-full rounded border object-cover cursor-pointer"
-                                    onClick={() => window.open(previews.lft ?? `/${journal!.lft_entry_image}`, '_blank')}
-                                />
-                            )}
-                            <InputError message={errors.lft_entry_image} />
-                        </div>
+                        {(['hft', 'mft', 'lft'] as const).map((key) => {
+                            const field = `${key}_entry_image` as 'hft_entry_image' | 'mft_entry_image' | 'lft_entry_image';
+                            const ref = key === 'hft' ? hftImageRef : key === 'mft' ? mftImageRef : lftImageRef;
+                            const label = `${key.toUpperCase()} Entry Image`;
+                            const previewSrc = previews[key] ?? (journal?.[field] && !data[field] ? `/${journal[field]}` : null);
+
+                            return (
+                                <div key={key} className="space-y-2">
+                                    <Label>{label}</Label>
+                                    <input
+                                        ref={ref}
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={(e) => handleImageChange(field, e.target.files?.[0] ?? null)}
+                                    />
+                                    {previewSrc ? (
+                                        <div className="relative h-48 w-48">
+                                            <img
+                                                src={previewSrc}
+                                                alt={`${key.toUpperCase()} preview`}
+                                                className="h-48 w-48 cursor-pointer rounded-lg border object-cover"
+                                                onClick={() => window.open(previewSrc, '_blank')}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    handleImageChange(field, null);
+                                                    if (ref.current) ref.current.value = '';
+                                                }}
+                                                className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow hover:bg-red-600"
+                                            >
+                                                <X className="h-3.5 w-3.5" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => ref.current?.click()}
+                                            className="flex h-48 w-48 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/30 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground"
+                                        >
+                                            <ImagePlus className="h-8 w-8" />
+                                            <span className="text-xs">{label}</span>
+                                        </button>
+                                    )}
+                                    <InputError message={errors[field]} />
+                                </div>
+                            );
+                        })}
                     </div>
 
                     {/* Row 6: Trade Comment */}

@@ -78,6 +78,11 @@ class User extends Authenticatable
         return $this->hasMany(AccountBalance::class);
     }
 
+    public function templers(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Templer::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

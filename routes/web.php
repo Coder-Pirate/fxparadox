@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Manager\DashboardController as ManagerDashboardController;
 use App\Http\Controllers\User\AccountBalanceController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
+use App\Http\Controllers\User\TemplerController;
 use App\Http\Controllers\User\TradeJournalController;
 use App\Http\Controllers\User\TradingPairController;
 use App\Http\Controllers\User\TradingSessionController;
@@ -59,6 +60,7 @@ Route::middleware(['auth', 'verified', 'approved', 'role:manager'])->prefix('man
 Route::middleware(['auth', 'verified', 'approved', 'role:user'])->prefix('user')->name('user.')->group(function () {
     Route::get('dashboard', UserDashboardController::class)->name('dashboard');
     Route::resource('trade-journals', TradeJournalController::class);
+    Route::resource('templers', TemplerController::class);
 
     // Trading settings
     Route::get('trading-settings', TradingSettingsController::class)->name('trading-settings');
