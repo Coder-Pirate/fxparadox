@@ -72,29 +72,20 @@ jobs:
 
       - name: Build NPM Assets
         run: npm run build
+        env:
+          VITE_APP_NAME: "FX Paradox"
 
-      # - name: Remove Old Build Files on Server
-      #   uses: appleboy/ssh-action@v0.1.6
-      #   with:
-      #     host: ${{ secrets.VPS_HOST }}
-      #     username: ${{ secrets.VPS_USER }}
-      #     password: ${{ secrets.VPS_PASSWORD }}
-      #     script: |
-      #       rm -rf /var/www/html/fxparadox/public/build
-      #       rm -rf /var/www/html/fxparadox/bootstrap/cache/*.php
-      #       rm -rf /var/www/html/fxparadox/database/migrations/*.php
+      - name: Remove CI .env before deploy
+        run: rm -f .env
 
-      # - name: Backup production .env
-      #   uses: appleboy/ssh-action@v0.1.6
-      #   with:
-      #     host: ${{ secrets.VPS_HOST }}
-      #     username: ${{ secrets.VPS_USER }}
-      #     password: ${{ secrets.VPS_PASSWORD }}
-      #     script: |
-      #       cp /var/www/html/ordercheker/.env /tmp/.env.production.backup 2>/dev/null || true
-
-      # - name: Remove CI .env before deploy
-      #   run: rm -f .env
+      - name: Backup production .env
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            cp /var/www/html/fxparadox/.env /tmp/.env.production.backup 2>/dev/null || true
 
       - name: Synchronize Files To Server
         uses: appleboy/scp-action@v0.1.1
@@ -104,6 +95,15 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           source: '.'
           target: '/var/www/html/fxparadox/'
+
+      - name: Restore production .env
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            cp /tmp/.env.production.backup /var/www/html/fxparadox/.env 2>/dev/null || true
 
       - name: Run Remote/Artisan Commands
         uses: appleboy/ssh-action@v0.1.6
