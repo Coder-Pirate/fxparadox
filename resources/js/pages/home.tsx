@@ -2,9 +2,9 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import {
     TrendingUp, BarChart3, Shield, Zap, Target, LineChart,
     ArrowRight, ChevronRight, Activity, Layers,
-    Sun, Moon, Menu, X,
+    Sun, Moon, Menu, X, Download,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAppearance } from '@/hooks/use-appearance';
 import type { SiteContentValues } from '@/types/site-content';
 
@@ -28,6 +28,33 @@ export default function Home() {
     const { contents = {}, canRegister, auth } = usePage<Props>().props;
     const { resolvedAppearance, updateAppearance } = useAppearance();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const deferredPrompt = useRef<any>(null);
+    const [canInstall, setCanInstall] = useState(false);
+
+    useEffect(() => {
+        const handler = (e: Event) => {
+            e.preventDefault();
+            deferredPrompt.current = e;
+            setCanInstall(true);
+        };
+        window.addEventListener('beforeinstallprompt', handler);
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
+
+        return () => window.removeEventListener('beforeinstallprompt', handler);
+    }, []);
+
+    const handleInstall = async () => {
+        if (!deferredPrompt.current) return;
+        deferredPrompt.current.prompt();
+        const result = await deferredPrompt.current.userChoice;
+        if (result.outcome === 'accepted') {
+            setCanInstall(false);
+        }
+        deferredPrompt.current = null;
+    };
 
     const hero = contents.hero ?? {};
     const feature1 = contents.feature_1 ?? {};
@@ -284,9 +311,20 @@ export default function Home() {
                                 </div>
                                 <span className="font-semibold">FX Paradox</span>
                             </div>
-                            <p className="text-xs text-muted-foreground sm:text-sm">
-                                {footer.copyright ?? `© ${new Date().getFullYear()} FX Paradox. All rights reserved.`}
-                            </p>
+                            <div className="flex items-center gap-4">
+                                {canInstall && (
+                                    <button
+                                        onClick={handleInstall}
+                                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
+                                    >
+                                        <Download className="h-4 w-4" />
+                                        Get App
+                                    </button>
+                                )}
+                                <p className="text-xs text-muted-foreground sm:text-sm">
+                                    {footer.copyright ?? `© ${new Date().getFullYear()} FX Paradox. All rights reserved.`}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </footer>
