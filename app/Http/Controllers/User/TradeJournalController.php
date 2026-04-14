@@ -48,7 +48,7 @@ class TradeJournalController extends Controller
 
         $perPage = in_array((int) $request->input('perPage'), [10, 15, 25, 50, 100]) ? (int) $request->input('perPage') : 15;
 
-        $journals = $query->orderByDesc('trade_date')->paginate($perPage)->withQueryString();
+        $journals = $query->orderByDesc('trade_date')->orderByDesc('created_at')->paginate($perPage)->withQueryString();
 
         return Inertia::render('user/trade-journals/index', [
             'journals' => $journals,
