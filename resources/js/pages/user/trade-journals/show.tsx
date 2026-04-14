@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
-import { ArrowLeft, Pencil, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Pencil, ZoomIn, ZoomOut, RotateCcw, CheckCircle2, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -104,6 +104,25 @@ export default function ShowTradeJournal({ journal }: Props) {
                         </div>
                     </CardContent>
                 </Card>
+
+                {/* Checklist Card */}
+                {journal.checklist && journal.checklist.length > 0 && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg">Trade Checklist</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-2">
+                                {journal.checklist.map((rule) => (
+                                    <div key={rule} className="flex items-center gap-2">
+                                        <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                        <span className="text-sm">{rule}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Chart Images Card */}
                 {(journal.hft_entry_image || journal.mft_entry_image || journal.lft_entry_image) && (

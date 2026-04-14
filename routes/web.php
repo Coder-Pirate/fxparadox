@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Manager\DashboardController as ManagerDashboardController;
 use App\Http\Controllers\User\AccountBalanceController;
+use App\Http\Controllers\User\ChecklistRuleController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\TemplerController;
 use App\Http\Controllers\User\TradeJournalController;
@@ -69,6 +70,7 @@ Route::middleware(['auth', 'verified', 'approved', 'role:user'])->prefix('user')
     Route::resource('trading-pairs', TradingPairController::class)->only(['store', 'update', 'destroy']);
     Route::resource('trading-sessions', TradingSessionController::class)->only(['store', 'update', 'destroy']);
     Route::resource('account-balances', AccountBalanceController::class)->only(['store', 'update', 'destroy']);
+    Route::resource('checklist-rules', ChecklistRuleController::class)->only(['store', 'update', 'destroy']);
 });
 
 require __DIR__.'/settings.php';

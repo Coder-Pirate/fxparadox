@@ -22,3 +22,12 @@ export type AccountBalance = {
     created_at: string;
     updated_at: string;
 };
+
+export type ChecklistRule = {
+    id: number;
+    user_id: number;
+    name: string;
+    sort_order: number;
+    created_at: string;
+    updated_at: string;
+};

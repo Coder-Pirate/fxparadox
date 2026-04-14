@@ -23,6 +23,7 @@ export type TradeJournal = {
     mft_entry_image: string | null;
     lft_entry_image: string | null;
     red_news_time: string | null;
+    checklist: string[] | null;
     created_at: string;
     updated_at: string;
 };

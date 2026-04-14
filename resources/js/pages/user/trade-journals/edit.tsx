@@ -7,9 +7,10 @@ type Props = {
     pairs: string[];
     sessions: string[];
     accounts: { id: number; account_name: string; balance: number }[];
+    checklistRules: string[];
 };
 
-export default function EditTradeJournal({ journal, pairs, sessions, accounts }: Props) {
+export default function EditTradeJournal({ journal, pairs, sessions, accounts, checklistRules }: Props) {
     return (
         <>
             <Head title="Edit Trade Entry" />
@@ -20,6 +21,7 @@ export default function EditTradeJournal({ journal, pairs, sessions, accounts }:
                     pairs={pairs}
                     sessions={sessions}
                     accounts={accounts}
+                    checklistRules={checklistRules}
                 />
             </div>
         </>

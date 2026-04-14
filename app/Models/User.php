@@ -83,6 +83,11 @@ class User extends Authenticatable
         return $this->hasMany(Templer::class);
     }
 
+    public function checklistRules(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ChecklistRule::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

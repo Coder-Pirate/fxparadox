@@ -64,6 +64,7 @@ class TradeJournalController extends Controller
             'pairs' => $request->user()->tradingPairs()->orderBy('name')->pluck('name'),
             'sessions' => $request->user()->tradingSessions()->orderBy('name')->pluck('name'),
             'accounts' => $request->user()->accountBalances()->orderBy('account_name')->get(['id', 'account_name', 'balance']),
+            'checklistRules' => $request->user()->checklistRules()->orderBy('sort_order')->pluck('name'),
         ]);
     }
 
@@ -100,6 +101,8 @@ class TradeJournalController extends Controller
             'mft_entry_image' => ['nullable', 'image', 'max:5120'],
             'lft_entry_image' => ['nullable', 'image', 'max:5120'],
             'red_news_time' => ['nullable', 'string', 'max:100'],
+            'checklist' => ['nullable', 'array'],
+            'checklist.*' => ['string', 'max:100'],
         ]);
 
         // Handle image uploads
@@ -142,6 +145,7 @@ class TradeJournalController extends Controller
             'pairs' => $request->user()->tradingPairs()->orderBy('name')->pluck('name'),
             'sessions' => $request->user()->tradingSessions()->orderBy('name')->pluck('name'),
             'accounts' => $request->user()->accountBalances()->orderBy('account_name')->get(['id', 'account_name', 'balance']),
+            'checklistRules' => $request->user()->checklistRules()->orderBy('sort_order')->pluck('name'),
         ]);
     }
 
@@ -172,6 +176,8 @@ class TradeJournalController extends Controller
             'remove_mft_entry_image' => ['nullable'],
             'remove_lft_entry_image' => ['nullable'],
             'red_news_time' => ['nullable', 'string', 'max:100'],
+            'checklist' => ['nullable', 'array'],
+            'checklist.*' => ['string', 'max:100'],
         ]);
 
         // Handle image uploads and removals

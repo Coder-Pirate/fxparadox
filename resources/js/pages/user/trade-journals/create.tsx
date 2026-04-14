@@ -5,14 +5,15 @@ type Props = {
     pairs: string[];
     sessions: string[];
     accounts: { id: number; account_name: string; balance: number }[];
+    checklistRules: string[];
 };
 
-export default function CreateTradeJournal({ pairs, sessions, accounts }: Props) {
+export default function CreateTradeJournal({ pairs, sessions, accounts, checklistRules }: Props) {
     return (
         <>
             <Head title="New Trade Entry" />
             <div className="flex h-full flex-1 flex-col gap-4 p-4">
-                <TradeJournalForm submitUrl="/user/trade-journals" pairs={pairs} sessions={sessions} accounts={accounts} />
+                <TradeJournalForm submitUrl="/user/trade-journals" pairs={pairs} sessions={sessions} accounts={accounts} checklistRules={checklistRules} />
             </div>
         </>
     );

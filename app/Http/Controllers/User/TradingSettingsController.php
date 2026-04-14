@@ -16,6 +16,7 @@ class TradingSettingsController extends Controller
             'pairs' => $user->tradingPairs()->orderBy('name')->get(),
             'sessions' => $user->tradingSessions()->orderBy('name')->get(),
             'accounts' => $user->accountBalances()->orderBy('account_name')->get(),
+            'checklistRules' => $user->checklistRules()->orderBy('sort_order')->get(),
         ]);
     }
 }

@@ -29,6 +29,7 @@ class TradeJournal extends Model
         'mft_entry_image',
         'lft_entry_image',
         'red_news_time',
+        'checklist',
     ];
 
     protected function casts(): array
@@ -37,6 +38,7 @@ class TradeJournal extends Model
             'trade_date' => 'date',
             'lot_size' => 'decimal:2',
             'profit_loss_amount' => 'decimal:2',
+            'checklist' => 'array',
         ];
     }
 

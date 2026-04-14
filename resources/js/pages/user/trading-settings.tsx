@@ -1,6 +1,6 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
-import { Pencil, Trash2, Plus, Settings2, DollarSign, BarChart3 } from 'lucide-react';
+import { Pencil, Trash2, Plus, Settings2, DollarSign, BarChart3, ClipboardCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,15 +14,16 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import type { TradingPair, TradingSession, AccountBalance } from '@/types/trading-settings';
+import type { TradingPair, TradingSession, AccountBalance, ChecklistRule } from '@/types/trading-settings';
 
 type Props = {
     pairs: TradingPair[];
     sessions: TradingSession[];
     accounts: AccountBalance[];
+    checklistRules: ChecklistRule[];
 };
 
-export default function TradingSettings({ pairs, sessions, accounts }: Props) {
+export default function TradingSettings({ pairs, sessions, accounts, checklistRules }: Props) {
     return (
         <>
             <Head title="Trading Settings" />
@@ -30,6 +31,7 @@ export default function TradingSettings({ pairs, sessions, accounts }: Props) {
                 <PairsSection pairs={pairs} />
                 <SessionsSection sessions={sessions} />
                 <AccountsSection accounts={accounts} />
+                <ChecklistRulesSection rules={checklistRules} />
             </div>
         </>
     );
@@ -351,6 +353,107 @@ function AccountsSection({ accounts }: { accounts: AccountBalance[] }) {
                                                     <Pencil className="h-4 w-4" />
                                                 </Button>
                                                 <Button variant="ghost" size="icon" onClick={() => handleDelete(account.id)}>
+                                                    <Trash2 className="h-4 w-4 text-red-500" />
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
+/* ─── Checklist Rules ─── */
+function ChecklistRulesSection({ rules }: { rules: ChecklistRule[] }) {
+    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editName, setEditName] = useState('');
+
+    const form = useForm({ name: '' });
+
+    function handleAdd(e: FormEvent) {
+        e.preventDefault();
+        form.post('/user/checklist-rules', { preserveScroll: true, onSuccess: () => form.reset() });
+    }
+
+    function startEdit(rule: ChecklistRule) {
+        setEditingId(rule.id);
+        setEditName(rule.name);
+    }
+
+    function handleUpdate(id: number) {
+        router.put(`/user/checklist-rules/${id}`, { name: editName }, { preserveScroll: true, onSuccess: () => setEditingId(null) });
+    }
+
+    function handleDelete(id: number) {
+        if (confirm('Delete this checklist rule?')) {
+            router.delete(`/user/checklist-rules/${id}`, { preserveScroll: true });
+        }
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <ClipboardCheck className="h-5 w-5" /> Checklist Rules
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <form onSubmit={handleAdd} className="flex items-end gap-2">
+                    <div className="flex-1 space-y-1">
+                        <Label htmlFor="new-rule">Add Rule</Label>
+                        <Input
+                            id="new-rule"
+                            placeholder="e.g. Price in Supply/Demand Zone"
+                            value={form.data.name}
+                            onChange={(e) => form.setData('name', e.target.value)}
+                        />
+                        <InputError message={form.errors.name} />
+                    </div>
+                    <Button type="submit" disabled={form.processing} size="sm">
+                        <Plus className="mr-1 h-4 w-4" /> Add
+                    </Button>
+                </form>
+
+                {rules.length > 0 && (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Rule</TableHead>
+                                <TableHead className="w-32 text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {rules.map((rule) => (
+                                <TableRow key={rule.id}>
+                                    <TableCell>
+                                        {editingId === rule.id ? (
+                                            <Input
+                                                value={editName}
+                                                onChange={(e) => setEditName(e.target.value)}
+                                                onKeyDown={(e) => e.key === 'Enter' && handleUpdate(rule.id)}
+                                                className="h-8"
+                                            />
+                                        ) : (
+                                            rule.name
+                                        )}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        {editingId === rule.id ? (
+                                            <div className="flex justify-end gap-1">
+                                                <Button size="sm" variant="default" onClick={() => handleUpdate(rule.id)}>Save</Button>
+                                                <Button size="sm" variant="ghost" onClick={() => setEditingId(null)}>Cancel</Button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex justify-end gap-1">
+                                                <Button variant="ghost" size="icon" onClick={() => startEdit(rule)}>
+                                                    <Pencil className="h-4 w-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" onClick={() => handleDelete(rule.id)}>
                                                     <Trash2 className="h-4 w-4 text-red-500" />
                                                 </Button>
                                             </div>

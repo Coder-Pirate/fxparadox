@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ImagePlus, X } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Select,
     SelectContent,
@@ -50,6 +51,7 @@ type TradeJournalFormData = {
     remove_mft_entry_image: boolean;
     remove_lft_entry_image: boolean;
     red_news_time: string;
+    checklist: string[];
 };
 
 type Props = {
@@ -59,9 +61,10 @@ type Props = {
     pairs?: string[];
     sessions?: string[];
     accounts?: { id: number; account_name: string; balance: number }[];
+    checklistRules?: string[];
 };
 
-export default function TradeJournalForm({ journal, submitUrl, pairs, sessions, accounts }: Props) {
+export default function TradeJournalForm({ journal, submitUrl, pairs, sessions, accounts, checklistRules }: Props) {
     const CURRENCY_PAIRS = pairs && pairs.length > 0 ? pairs : DEFAULT_PAIRS;
     const SESSIONS_LIST = sessions && sessions.length > 0 ? sessions : DEFAULT_SESSIONS;
     const hftImageRef = useRef<HTMLInputElement>(null);
@@ -109,6 +112,7 @@ export default function TradeJournalForm({ journal, submitUrl, pairs, sessions, 
         remove_mft_entry_image: false,
         remove_lft_entry_image: false,
         red_news_time: journal?.red_news_time ?? '',
+        checklist: journal?.checklist ?? [],
     });
 
     function handleDateChange(value: string) {
@@ -319,6 +323,44 @@ export default function TradeJournalForm({ journal, submitUrl, pairs, sessions, 
                             <InputError message={errors.red_news_time} />
                         </div>
                     </div>
+
+                    {/* Checklist Rules */}
+                    {checklistRules && checklistRules.length > 0 && (
+                        <div className="space-y-3">
+                            <Label>Trade Checklist</Label>
+                            <div className="rounded-lg border p-4 space-y-3">
+                                {checklistRules.map((rule) => {
+                                    const isChecked = data.checklist.includes(rule);
+                                    return (
+                                        <div key={rule} className="flex items-center gap-3">
+                                            <Checkbox
+                                                id={`checklist-${rule}`}
+                                                checked={isChecked}
+                                                onCheckedChange={(checked) => {
+                                                    if (checked) {
+                                                        setData('checklist', [...data.checklist, rule]);
+                                                    } else {
+                                                        setData('checklist', data.checklist.filter((r) => r !== rule));
+                                                    }
+                                                }}
+                                            />
+                                            <label
+                                                htmlFor={`checklist-${rule}`}
+                                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                            >
+                                                {rule}
+                                            </label>
+                                        </div>
+                                    );
+                                })}
+                                <div className="pt-2 border-t">
+                                    <p className="text-xs text-muted-foreground">
+                                        {data.checklist.length}/{checklistRules.length} rules checked
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Row 5: Image Uploads */}
                     <div className="grid gap-4 sm:grid-cols-3">
