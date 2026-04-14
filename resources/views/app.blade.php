@@ -30,9 +30,17 @@
             }
         </style>
 
-        <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        @php
+            $favicon = \App\Models\SiteContent::getValue('settings', 'site_favicon');
+        @endphp
+        @if($favicon)
+            <link rel="icon" href="/storage/{{ $favicon }}" type="image/png">
+            <link rel="apple-touch-icon" href="/storage/{{ $favicon }}">
+        @else
+            <link rel="icon" href="/favicon.ico" sizes="any">
+            <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+            <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        @endif
         <link rel="manifest" href="/manifest.json">
         <meta name="theme-color" content="#2563eb">
 

@@ -19,7 +19,7 @@ export default function AuthCardLayout({
     title?: string;
     description?: string;
 }>) {
-    const { name } = usePage().props;
+    const { name, siteLogo } = usePage().props;
 
     return (
         <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
@@ -29,7 +29,11 @@ export default function AuthCardLayout({
                     className="flex items-center gap-2 self-center font-medium"
                 >
                     <div className="flex h-9 w-9 items-center justify-center">
-                        <AppLogoIcon className="size-9 fill-current text-black dark:text-white" />
+                        {siteLogo ? (
+                            <img src={`/storage/${siteLogo}`} alt={name} className="size-9 object-contain" />
+                        ) : (
+                            <AppLogoIcon className="size-9 fill-current text-black dark:text-white" />
+                        )}
                     </div>
                     <span className="text-lg font-bold">{name}</span>
                 </Link>

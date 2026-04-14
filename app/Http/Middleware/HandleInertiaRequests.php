@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\SiteContent;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -39,7 +40,9 @@ class HandleInertiaRequests extends Middleware
 
         return [
             ...parent::share($request),
-            'name' => config('app.name'),
+            'name' => SiteContent::getValue('settings', 'site_name', config('app.name')),
+            'siteLogo' => SiteContent::getValue('settings', 'site_logo'),
+            'siteFavicon' => SiteContent::getValue('settings', 'site_favicon'),
             'auth' => [
                 'user' => $user,
             ],

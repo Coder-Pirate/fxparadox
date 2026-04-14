@@ -4,6 +4,7 @@ import { FormEvent, useRef, useState } from 'react';
 import type { SiteContentGrouped, SiteContentItem } from '@/types/site-content';
 
 const sectionLabels: Record<string, string> = {
+    settings: 'Site Settings',
     hero: 'Hero Section',
     features: 'Features Section',
     feature_1: 'Feature 1',
@@ -15,6 +16,9 @@ const sectionLabels: Record<string, string> = {
 };
 
 const keyLabels: Record<string, string> = {
+    site_name: 'Site Name',
+    site_logo: 'Site Logo',
+    site_favicon: 'Favicon',
     title: 'Title',
     subtitle: 'Subtitle',
     description: 'Description',

@@ -48,6 +48,11 @@ class SiteContentSeeder extends Seeder
 
             // Footer
             ['section' => 'footer', 'key' => 'copyright', 'type' => 'text', 'value' => '© 2026 FX Paradox. All rights reserved.', 'order' => 1],
+
+            // Site Settings
+            ['section' => 'settings', 'key' => 'site_name', 'type' => 'text', 'value' => 'FX Paradox', 'order' => 1],
+            ['section' => 'settings', 'key' => 'site_logo', 'type' => 'image', 'value' => null, 'order' => 2],
+            ['section' => 'settings', 'key' => 'site_favicon', 'type' => 'image', 'value' => null, 'order' => 3],
         ];
 
         foreach ($contents as $content) {
