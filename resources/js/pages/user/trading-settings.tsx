@@ -14,6 +14,15 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import type { TradingPair, TradingSession, AccountBalance, ChecklistRule } from '@/types/trading-settings';
 
 type Props = {
@@ -41,6 +50,7 @@ export default function TradingSettings({ pairs, sessions, accounts, checklistRu
 function PairsSection({ pairs }: { pairs: TradingPair[] }) {
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editName, setEditName] = useState('');
+    const [deleteId, setDeleteId] = useState<number | null>(null);
 
     const form = useForm({ name: '' });
 
@@ -58,9 +68,12 @@ function PairsSection({ pairs }: { pairs: TradingPair[] }) {
         router.put(`/user/trading-pairs/${id}`, { name: editName }, { preserveScroll: true, onSuccess: () => setEditingId(null) });
     }
 
-    function handleDelete(id: number) {
-        if (confirm('Delete this pair?')) {
-            router.delete(`/user/trading-pairs/${id}`, { preserveScroll: true });
+    function confirmDelete() {
+        if (deleteId) {
+            router.delete(`/user/trading-pairs/${deleteId}`, {
+                preserveScroll: true,
+                onFinish: () => setDeleteId(null),
+            });
         }
     }
 
@@ -122,7 +135,7 @@ function PairsSection({ pairs }: { pairs: TradingPair[] }) {
                                                 <Button variant="ghost" size="icon" onClick={() => startEdit(pair)}>
                                                     <Pencil className="h-4 w-4" />
                                                 </Button>
-                                                <Button variant="ghost" size="icon" onClick={() => handleDelete(pair.id)}>
+                                                <Button variant="ghost" size="icon" onClick={() => setDeleteId(pair.id)}>
                                                     <Trash2 className="h-4 w-4 text-red-500" />
                                                 </Button>
                                             </div>
@@ -134,6 +147,19 @@ function PairsSection({ pairs }: { pairs: TradingPair[] }) {
                     </Table>
                 )}
             </CardContent>
+
+            <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogTitle>Are you sure you want to delete this trading pair?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Once deleted, this trading pair will be permanently removed. This action cannot be undone.
+                    </AlertDialogDescription>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </Card>
     );
 }
@@ -142,6 +168,7 @@ function PairsSection({ pairs }: { pairs: TradingPair[] }) {
 function SessionsSection({ sessions }: { sessions: TradingSession[] }) {
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editName, setEditName] = useState('');
+    const [deleteId, setDeleteId] = useState<number | null>(null);
 
     const form = useForm({ name: '' });
 
@@ -159,9 +186,12 @@ function SessionsSection({ sessions }: { sessions: TradingSession[] }) {
         router.put(`/user/trading-sessions/${id}`, { name: editName }, { preserveScroll: true, onSuccess: () => setEditingId(null) });
     }
 
-    function handleDelete(id: number) {
-        if (confirm('Delete this session?')) {
-            router.delete(`/user/trading-sessions/${id}`, { preserveScroll: true });
+    function confirmDelete() {
+        if (deleteId) {
+            router.delete(`/user/trading-sessions/${deleteId}`, {
+                preserveScroll: true,
+                onFinish: () => setDeleteId(null),
+            });
         }
     }
 
@@ -223,7 +253,7 @@ function SessionsSection({ sessions }: { sessions: TradingSession[] }) {
                                                 <Button variant="ghost" size="icon" onClick={() => startEdit(session)}>
                                                     <Pencil className="h-4 w-4" />
                                                 </Button>
-                                                <Button variant="ghost" size="icon" onClick={() => handleDelete(session.id)}>
+                                                <Button variant="ghost" size="icon" onClick={() => setDeleteId(session.id)}>
                                                     <Trash2 className="h-4 w-4 text-red-500" />
                                                 </Button>
                                             </div>
@@ -235,6 +265,19 @@ function SessionsSection({ sessions }: { sessions: TradingSession[] }) {
                     </Table>
                 )}
             </CardContent>
+
+            <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogTitle>Are you sure you want to delete this trading session?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Once deleted, this trading session will be permanently removed. This action cannot be undone.
+                    </AlertDialogDescription>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </Card>
     );
 }
@@ -244,6 +287,7 @@ function AccountsSection({ accounts }: { accounts: AccountBalance[] }) {
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editAccountName, setEditAccountName] = useState('');
     const [editBalance, setEditBalance] = useState('');
+    const [deleteId, setDeleteId] = useState<number | null>(null);
 
     const form = useForm({ account_name: '', balance: '' });
 
@@ -262,9 +306,12 @@ function AccountsSection({ accounts }: { accounts: AccountBalance[] }) {
         router.put(`/user/account-balances/${id}`, { account_name: editAccountName, balance: editBalance }, { preserveScroll: true, onSuccess: () => setEditingId(null) });
     }
 
-    function handleDelete(id: number) {
-        if (confirm('Delete this account?')) {
-            router.delete(`/user/account-balances/${id}`, { preserveScroll: true });
+    function confirmDelete() {
+        if (deleteId) {
+            router.delete(`/user/account-balances/${deleteId}`, {
+                preserveScroll: true,
+                onFinish: () => setDeleteId(null),
+            });
         }
     }
 
@@ -352,7 +399,7 @@ function AccountsSection({ accounts }: { accounts: AccountBalance[] }) {
                                                 <Button variant="ghost" size="icon" onClick={() => startEdit(account)}>
                                                     <Pencil className="h-4 w-4" />
                                                 </Button>
-                                                <Button variant="ghost" size="icon" onClick={() => handleDelete(account.id)}>
+                                                <Button variant="ghost" size="icon" onClick={() => setDeleteId(account.id)}>
                                                     <Trash2 className="h-4 w-4 text-red-500" />
                                                 </Button>
                                             </div>
@@ -364,6 +411,19 @@ function AccountsSection({ accounts }: { accounts: AccountBalance[] }) {
                     </Table>
                 )}
             </CardContent>
+
+            <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogTitle>Are you sure you want to delete this account?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Once deleted, this account balance will be permanently removed. This action cannot be undone.
+                    </AlertDialogDescription>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </Card>
     );
 }
@@ -372,6 +432,7 @@ function AccountsSection({ accounts }: { accounts: AccountBalance[] }) {
 function ChecklistRulesSection({ rules }: { rules: ChecklistRule[] }) {
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editName, setEditName] = useState('');
+    const [deleteId, setDeleteId] = useState<number | null>(null);
 
     const form = useForm({ name: '' });
 
@@ -389,9 +450,12 @@ function ChecklistRulesSection({ rules }: { rules: ChecklistRule[] }) {
         router.put(`/user/checklist-rules/${id}`, { name: editName }, { preserveScroll: true, onSuccess: () => setEditingId(null) });
     }
 
-    function handleDelete(id: number) {
-        if (confirm('Delete this checklist rule?')) {
-            router.delete(`/user/checklist-rules/${id}`, { preserveScroll: true });
+    function confirmDelete() {
+        if (deleteId) {
+            router.delete(`/user/checklist-rules/${deleteId}`, {
+                preserveScroll: true,
+                onFinish: () => setDeleteId(null),
+            });
         }
     }
 
@@ -453,7 +517,7 @@ function ChecklistRulesSection({ rules }: { rules: ChecklistRule[] }) {
                                                 <Button variant="ghost" size="icon" onClick={() => startEdit(rule)}>
                                                     <Pencil className="h-4 w-4" />
                                                 </Button>
-                                                <Button variant="ghost" size="icon" onClick={() => handleDelete(rule.id)}>
+                                                <Button variant="ghost" size="icon" onClick={() => setDeleteId(rule.id)}>
                                                     <Trash2 className="h-4 w-4 text-red-500" />
                                                 </Button>
                                             </div>
@@ -465,6 +529,19 @@ function ChecklistRulesSection({ rules }: { rules: ChecklistRule[] }) {
                     </Table>
                 )}
             </CardContent>
+
+            <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogTitle>Are you sure you want to delete this checklist rule?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Once deleted, this checklist rule will be permanently removed. This action cannot be undone.
+                    </AlertDialogDescription>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </Card>
     );
 }
