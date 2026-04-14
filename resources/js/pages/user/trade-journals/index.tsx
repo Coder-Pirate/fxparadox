@@ -276,7 +276,7 @@ export default function TradeJournalIndex({ journals, filters, availablePairs, a
                                                 <TableCell>{journal.mft_market_trend}</TableCell>
                                                 <TableCell>
                                                     {journal.direction ? (
-                                                        <Badge variant={journal.direction === 'long' ? 'default' : 'secondary'}>
+                                                        <Badge variant="default">
                                                             {journal.direction.toUpperCase()}
                                                         </Badge>
                                                     ) : '-'}
