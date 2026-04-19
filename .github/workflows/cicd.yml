@@ -35,6 +35,7 @@ jobs:
 
       - name: Configure Database for CI
         run: |
+          sed -i 's/APP_NAME=Laravel/APP_NAME="FX Paradox"/' .env
           sed -i 's/DB_CONNECTION=sqlite/DB_CONNECTION=mysql/' .env
           sed -i "s/# DB_HOST=127.0.0.1/DB_HOST=127.0.0.1/" .env
           sed -i "s/# DB_PORT=3306/DB_PORT=3306/" .env
