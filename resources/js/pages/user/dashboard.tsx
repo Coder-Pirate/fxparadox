@@ -11,6 +11,7 @@ import {
     ChevronLeft,
     ChevronRight,
     ArrowRightLeft,
+    TrendingUp,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
@@ -32,6 +33,18 @@ type DaySummary = {
     trades: DayTrade[];
 };
 
+type PnlStat = { net: number; profit: number; loss: number; trades: number };
+
+type PnlPeriods = {
+    today: PnlStat;
+    yesterday: PnlStat;
+    lastWeek: PnlStat;
+    lastMonth: PnlStat;
+    custom: PnlStat | null;
+    customFrom: string | null;
+    customTo: string | null;
+};
+
 type Account = {
     id: number;
     account_name: string;
@@ -51,14 +64,39 @@ type Props = {
         netPnl: number;
     };
     accounts: Account[];
+    pnlPeriods: PnlPeriods;
     dailySummary: DaySummary[];
     currentMonth: string;
 };
 
 const defaultStats = { totalTrades: 0, winTrades: 0, lossTrades: 0, winRate: 0, daysTraded: 0, totalProfit: 0, totalLoss: 0, netPnl: 0 };
+const defaultPnlStat: PnlStat = { net: 0, profit: 0, loss: 0, trades: 0 };
+const defaultPnlPeriods: PnlPeriods = { today: defaultPnlStat, yesterday: defaultPnlStat, lastWeek: defaultPnlStat, lastMonth: defaultPnlStat, custom: null, customFrom: null, customTo: null };
 
-export default function UserDashboard({ stats: rawStats, accounts = [], dailySummary = [], currentMonth }: Props) {
+function PnlValue({ value }: { value: number }) {
+    const pos = value >= 0;
+    return (
+        <span className={`text-2xl font-bold ${pos ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+            {pos ? '+' : '-'}${Math.abs(value).toFixed(2)}
+        </span>
+    );
+}
+
+function PnlSubtext({ stat }: { stat: PnlStat }) {
+    return (
+        <p className="text-xs text-muted-foreground">
+            <span className="text-green-600">+${stat.profit.toFixed(2)}</span>
+            {' / '}
+            <span className="text-red-600">-${stat.loss.toFixed(2)}</span>
+            {' · '}
+            {stat.trades} trade{stat.trades !== 1 ? 's' : ''}
+        </p>
+    );
+}
+
+export default function UserDashboard({ stats: rawStats, accounts = [], pnlPeriods: rawPnl, dailySummary = [], currentMonth }: Props) {
     const stats = rawStats || defaultStats;
+    const pnl = rawPnl || defaultPnlPeriods;
     const monthStr = currentMonth || new Date().toISOString().slice(0, 7);
     const [year, month] = monthStr.split('-').map(Number);
     const monthDate = new Date(year, month - 1, 1);
@@ -68,6 +106,9 @@ export default function UserDashboard({ stats: rawStats, accounts = [], dailySum
     const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month - 1;
 
     const [selectedDay, setSelectedDay] = useState<DaySummary | null>(null);
+    const [customFrom, setCustomFrom] = useState(pnl.customFrom ?? '');
+    const [customTo, setCustomTo] = useState(pnl.customTo ?? '');
+    const [pnlTab, setPnlTab] = useState<'today' | 'yesterday' | 'lastWeek' | 'lastMonth' | 'custom'>('today');
 
     // Build calendar grid
     const calendarDays = useMemo(() => {
@@ -111,6 +152,7 @@ export default function UserDashboard({ stats: rawStats, accounts = [], dailySum
         <>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
+
                 {/* Stats Cards */}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <Card>
@@ -168,31 +210,114 @@ export default function UserDashboard({ stats: rawStats, accounts = [], dailySum
                     </Card>
                 </div>
 
-                {/* Account Balances */}
-                {accounts.length > 0 && (
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {accounts.map((account) => {
-                            const gain = account.balance - account.starting_balance;
-                            return (
-                                <Card key={account.id}>
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">{account.account_name}</CardTitle>
-                                        <DollarSign className="h-4 w-4 text-muted-foreground" />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">${Number(account.balance).toFixed(2)}</div>
-                                        <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
-                                            <span>Starting: ${Number(account.starting_balance).toFixed(2)}</span>
-                                            <span className={gain >= 0 ? 'font-semibold text-green-600 dark:text-green-400' : 'font-semibold text-red-600 dark:text-red-400'}>
-                                                {gain >= 0 ? '+' : '-'}${Math.abs(gain).toFixed(2)}
-                                            </span>
+                {/* Account Balances + PnL Summary */}
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {accounts.map((account) => {
+                        const gain = account.balance - account.starting_balance;
+                        return (
+                            <Card key={account.id}>
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                    <CardTitle className="text-sm font-medium">{account.account_name}</CardTitle>
+                                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-2xl font-bold">${Number(account.balance).toFixed(2)}</div>
+                                    <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
+                                        <span>Starting: ${Number(account.starting_balance).toFixed(2)}</span>
+                                        <span className={gain >= 0 ? 'font-semibold text-green-600 dark:text-green-400' : 'font-semibold text-red-600 dark:text-red-400'}>
+                                            {gain >= 0 ? '+' : '-'}${Math.abs(gain).toFixed(2)}
+                                        </span>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        );
+                    })}
+
+                    {/* PnL Summary */}
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">P&L Summary</CardTitle>
+                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            {/* Tab buttons */}
+                            <div className="mb-3 flex flex-wrap gap-1">
+                                {([
+                                    { key: 'today', label: 'Today' },
+                                    { key: 'yesterday', label: 'Yesterday' },
+                                    { key: 'lastWeek', label: 'Last Week' },
+                                    { key: 'lastMonth', label: 'Last Month' },
+                                    { key: 'custom', label: 'Custom' },
+                                ] as { key: typeof pnlTab; label: string }[]).map(({ key, label }) => (
+                                    <button
+                                        key={key}
+                                        onClick={() => setPnlTab(key)}
+                                        className={`rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                                            pnlTab === key
+                                                ? 'bg-primary text-primary-foreground'
+                                                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                        }`}
+                                    >
+                                        {label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {pnlTab !== 'custom' && (() => {
+                                const stat = pnl[pnlTab];
+                                return (
+                                    <div className="flex flex-col gap-0.5">
+                                        <PnlValue value={stat.net} />
+                                        <PnlSubtext stat={stat} />
+                                    </div>
+                                );
+                            })()}
+
+                            {pnlTab === 'custom' && (
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex flex-col gap-1.5">
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-[11px] text-muted-foreground">From</span>
+                                            <input
+                                                type="date"
+                                                value={customFrom}
+                                                onChange={(e) => setCustomFrom(e.target.value)}
+                                                className="h-7 rounded-md border border-border bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                                            />
                                         </div>
-                                    </CardContent>
-                                </Card>
-                            );
-                        })}
-                    </div>
-                )}
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-[11px] text-muted-foreground">To</span>
+                                            <input
+                                                type="date"
+                                                value={customTo}
+                                                onChange={(e) => setCustomTo(e.target.value)}
+                                                className="h-7 rounded-md border border-border bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                                            />
+                                        </div>
+                                        <Button
+                                            size="sm"
+                                            className="h-7 w-full text-xs"
+                                            onClick={() => {
+                                                if (customFrom && customTo) {
+                                                    router.get('/user/dashboard', { pnl_from: customFrom, pnl_to: customTo }, { preserveScroll: true });
+                                                }
+                                            }}
+                                            disabled={!customFrom || !customTo}
+                                        >
+                                            Apply
+                                        </Button>
+                                    </div>
+                                    {pnl.custom && (
+                                        <div className="flex flex-col gap-0.5">
+                                            <PnlValue value={pnl.custom.net} />
+                                            <PnlSubtext stat={pnl.custom} />
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
 
                 {/* Daily Summary Calendar */}
                 <Card>
