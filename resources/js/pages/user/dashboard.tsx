@@ -108,7 +108,9 @@ export default function UserDashboard({ stats: rawStats, accounts = [], pnlPerio
     const [selectedDay, setSelectedDay] = useState<DaySummary | null>(null);
     const [customFrom, setCustomFrom] = useState(pnl.customFrom ?? '');
     const [customTo, setCustomTo] = useState(pnl.customTo ?? '');
-    const [pnlTab, setPnlTab] = useState<'today' | 'yesterday' | 'lastWeek' | 'lastMonth' | 'custom'>('today');
+    const [pnlTab, setPnlTab] = useState<'today' | 'yesterday' | 'lastWeek' | 'lastMonth' | 'custom'>(
+        pnl.customFrom && pnl.customTo ? 'custom' : 'today'
+    );
 
     // Build calendar grid
     const calendarDays = useMemo(() => {
@@ -294,18 +296,35 @@ export default function UserDashboard({ stats: rawStats, accounts = [], pnlPerio
                                                 className="h-7 rounded-md border border-border bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                                             />
                                         </div>
-                                        <Button
-                                            size="sm"
-                                            className="h-7 w-full text-xs"
-                                            onClick={() => {
-                                                if (customFrom && customTo) {
-                                                    router.get('/user/dashboard', { pnl_from: customFrom, pnl_to: customTo }, { preserveScroll: true });
-                                                }
-                                            }}
-                                            disabled={!customFrom || !customTo}
-                                        >
-                                            Apply
-                                        </Button>
+                                        <div className="flex gap-2">
+                                            <Button
+                                                size="sm"
+                                                className="h-7 flex-1 text-xs"
+                                                onClick={() => {
+                                                    if (customFrom && customTo) {
+                                                        router.get('/user/dashboard', { pnl_from: customFrom, pnl_to: customTo }, { preserveScroll: true });
+                                                    }
+                                                }}
+                                                disabled={!customFrom || !customTo}
+                                            >
+                                                Apply
+                                            </Button>
+                                            {pnl.customFrom && (
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="h-7 text-xs"
+                                                    onClick={() => {
+                                                        setCustomFrom('');
+                                                        setCustomTo('');
+                                                        setPnlTab('today');
+                                                        router.get('/user/dashboard', {}, { preserveScroll: true });
+                                                    }}
+                                                >
+                                                    Clear
+                                                </Button>
+                                            )}
+                                        </div>
                                     </div>
                                     {pnl.custom && (
                                         <div className="flex flex-col gap-0.5">
