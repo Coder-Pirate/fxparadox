@@ -19,6 +19,7 @@ export type AccountBalance = {
     user_id: number;
     account_name: string;
     balance: number;
+    starting_balance: number;
     created_at: string;
     updated_at: string;
 };

@@ -4,11 +4,13 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ExportUsersController;
 use App\Http\Controllers\Admin\SiteContentController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\ForexNewsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Manager\DashboardController as ManagerDashboardController;
 use App\Http\Controllers\User\AccountBalanceController;
 use App\Http\Controllers\User\ChecklistRuleController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
+use App\Http\Controllers\User\EconomicCalendarController;
 use App\Http\Controllers\User\TemplerController;
 use App\Http\Controllers\User\TradeJournalController;
 use App\Http\Controllers\User\TradingPairController;
@@ -62,6 +64,8 @@ Route::middleware(['auth', 'verified', 'approved', 'role:manager'])->prefix('man
 // User routes
 Route::middleware(['auth', 'verified', 'approved', 'role:user'])->prefix('user')->name('user.')->group(function () {
     Route::get('dashboard', UserDashboardController::class)->name('dashboard');
+    Route::get('forex-news', ForexNewsController::class)->name('forex-news');
+    Route::get('economic-calendar', EconomicCalendarController::class)->name('economic-calendar');
     Route::resource('trade-journals', TradeJournalController::class);
     Route::resource('templers', TemplerController::class);
 

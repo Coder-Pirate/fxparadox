@@ -27,7 +27,7 @@ class DashboardController extends Controller
         $netPnl = $totalProfit - $totalLoss;
 
         // Account balances
-        $accounts = $user->accountBalances()->get(['id', 'account_name', 'balance']);
+        $accounts = $user->accountBalances()->get(['id', 'account_name', 'balance', 'starting_balance']);
 
         // Calendar month from query or current month
         $month = $request->input('month', now()->format('Y-m'));

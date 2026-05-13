@@ -1,0 +1,1 @@
+php artisan tinker --execute="DB::statement('ALTER TABLE account_balances ADD COLUMN starting_balance DECIMAL(15,2) NOT NULL DEFAULT 0 AFTER balance'); echo 'Done';"

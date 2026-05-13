@@ -36,6 +36,7 @@ type Account = {
     id: number;
     account_name: string;
     balance: number;
+    starting_balance: number;
 };
 
 type Props = {
@@ -170,18 +171,26 @@ export default function UserDashboard({ stats: rawStats, accounts = [], dailySum
                 {/* Account Balances */}
                 {accounts.length > 0 && (
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {accounts.map((account) => (
-                            <Card key={account.id}>
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                    <CardTitle className="text-sm font-medium">{account.account_name}</CardTitle>
-                                    <DollarSign className="h-4 w-4 text-muted-foreground" />
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-2xl font-bold">${Number(account.balance).toFixed(2)}</div>
-                                    <p className="text-xs text-muted-foreground">Account Balance</p>
-                                </CardContent>
-                            </Card>
-                        ))}
+                        {accounts.map((account) => {
+                            const gain = account.balance - account.starting_balance;
+                            return (
+                                <Card key={account.id}>
+                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                        <CardTitle className="text-sm font-medium">{account.account_name}</CardTitle>
+                                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold">${Number(account.balance).toFixed(2)}</div>
+                                        <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
+                                            <span>Starting: ${Number(account.starting_balance).toFixed(2)}</span>
+                                            <span className={gain >= 0 ? 'font-semibold text-green-600 dark:text-green-400' : 'font-semibold text-red-600 dark:text-red-400'}>
+                                                {gain >= 0 ? '+' : '-'}${Math.abs(gain).toFixed(2)}
+                                            </span>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            );
+                        })}
                     </div>
                 )}
 

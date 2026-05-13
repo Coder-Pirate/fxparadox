@@ -287,9 +287,10 @@ function AccountsSection({ accounts }: { accounts: AccountBalance[] }) {
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editAccountName, setEditAccountName] = useState('');
     const [editBalance, setEditBalance] = useState('');
+    const [editStartingBalance, setEditStartingBalance] = useState('');
     const [deleteId, setDeleteId] = useState<number | null>(null);
 
-    const form = useForm({ account_name: '', balance: '' });
+    const form = useForm({ account_name: '', balance: '', starting_balance: '' });
 
     function handleAdd(e: FormEvent) {
         e.preventDefault();
@@ -300,10 +301,11 @@ function AccountsSection({ accounts }: { accounts: AccountBalance[] }) {
         setEditingId(account.id);
         setEditAccountName(account.account_name);
         setEditBalance(account.balance.toString());
+        setEditStartingBalance(account.starting_balance.toString());
     }
 
     function handleUpdate(id: number) {
-        router.put(`/user/account-balances/${id}`, { account_name: editAccountName, balance: editBalance }, { preserveScroll: true, onSuccess: () => setEditingId(null) });
+        router.put(`/user/account-balances/${id}`, { account_name: editAccountName, balance: editBalance, starting_balance: editStartingBalance }, { preserveScroll: true, onSuccess: () => setEditingId(null) });
     }
 
     function confirmDelete() {
@@ -335,6 +337,18 @@ function AccountsSection({ accounts }: { accounts: AccountBalance[] }) {
                         <InputError message={form.errors.account_name} />
                     </div>
                     <div className="w-40 space-y-1">
+                        <Label htmlFor="new-starting-balance">Starting ($)</Label>
+                        <Input
+                            id="new-starting-balance"
+                            type="number"
+                            step="0.01"
+                            placeholder="e.g. 10000"
+                            value={form.data.starting_balance}
+                            onChange={(e) => form.setData('starting_balance', e.target.value)}
+                        />
+                        <InputError message={form.errors.starting_balance} />
+                    </div>
+                    <div className="w-40 space-y-1">
                         <Label htmlFor="new-balance">Balance ($)</Label>
                         <Input
                             id="new-balance"
@@ -356,6 +370,7 @@ function AccountsSection({ accounts }: { accounts: AccountBalance[] }) {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Account</TableHead>
+                                <TableHead>Starting Balance</TableHead>
                                 <TableHead>Balance</TableHead>
                                 <TableHead className="w-32 text-right">Actions</TableHead>
                             </TableRow>
@@ -372,6 +387,19 @@ function AccountsSection({ accounts }: { accounts: AccountBalance[] }) {
                                             />
                                         ) : (
                                             account.account_name
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
+                                        {editingId === account.id ? (
+                                            <Input
+                                                type="number"
+                                                step="0.01"
+                                                value={editStartingBalance}
+                                                onChange={(e) => setEditStartingBalance(e.target.value)}
+                                                className="h-8 w-32"
+                                            />
+                                        ) : (
+                                            `$${Number(account.starting_balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                                         )}
                                     </TableCell>
                                     <TableCell>

@@ -13,7 +13,13 @@ class AccountBalanceController extends Controller
         $validated = $request->validate([
             'account_name' => ['required', 'string', 'max:100'],
             'balance' => ['required', 'numeric', 'min:0'],
+            'starting_balance' => ['nullable', 'numeric', 'min:0'],
         ]);
+
+        // Default starting_balance to the initial balance when not provided
+        if (empty($validated['starting_balance'])) {
+            $validated['starting_balance'] = $validated['balance'];
+        }
 
         $request->user()->accountBalances()->create($validated);
 
@@ -29,6 +35,7 @@ class AccountBalanceController extends Controller
         $validated = $request->validate([
             'account_name' => ['required', 'string', 'max:100'],
             'balance' => ['required', 'numeric', 'min:0'],
+            'starting_balance' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $accountBalance->update($validated);

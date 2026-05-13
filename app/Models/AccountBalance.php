@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AccountBalance extends Model
 {
-    protected $fillable = ['user_id', 'account_name', 'balance'];
+    protected $fillable = ['user_id', 'account_name', 'balance', 'starting_balance'];
 
     protected function casts(): array
     {
         return [
             'balance' => 'decimal:2',
+            'starting_balance' => 'decimal:2',
         ];
     }
 
