@@ -75,6 +75,7 @@ Route::middleware(['auth', 'verified', 'approved', 'role:user'])->prefix('user')
     Route::resource('trading-sessions', TradingSessionController::class)->only(['store', 'update', 'destroy']);
     Route::resource('account-balances', AccountBalanceController::class)->only(['store', 'update', 'destroy']);
     Route::resource('checklist-rules', ChecklistRuleController::class)->only(['store', 'update', 'destroy']);
+    Route::patch('settings/daily-journal-limit', [\App\Http\Controllers\User\DailyJournalLimitController::class, 'update'])->name('daily-journal-limit.update');
 });
 
 require __DIR__.'/settings.php';

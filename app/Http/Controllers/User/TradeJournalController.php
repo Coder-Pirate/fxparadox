@@ -60,11 +60,17 @@ class TradeJournalController extends Controller
 
     public function create(Request $request)
     {
+        $user = $request->user();
+        $dailyLimit = $user->daily_journal_limit ?? 5;
+        $todayCount = $user->tradeJournals()->whereDate('created_at', today())->count();
+
         return Inertia::render('user/trade-journals/create', [
-            'pairs' => $request->user()->tradingPairs()->orderBy('name')->pluck('name'),
-            'sessions' => $request->user()->tradingSessions()->orderBy('name')->pluck('name'),
-            'accounts' => $request->user()->accountBalances()->orderBy('account_name')->get(['id', 'account_name', 'balance']),
-            'checklistRules' => $request->user()->checklistRules()->orderBy('sort_order')->pluck('name'),
+            'pairs' => $user->tradingPairs()->orderBy('name')->pluck('name'),
+            'sessions' => $user->tradingSessions()->orderBy('name')->pluck('name'),
+            'accounts' => $user->accountBalances()->orderBy('account_name')->get(['id', 'account_name', 'balance']),
+            'checklistRules' => $user->checklistRules()->orderBy('sort_order')->pluck('name'),
+            'dailyLimit' => $dailyLimit,
+            'todayCount' => $todayCount,
         ]);
     }
 
@@ -117,7 +123,15 @@ class TradeJournalController extends Controller
             }
         }
 
-        $validated['user_id'] = $request->user()->id;
+        $user = $request->user();
+        $dailyLimit = $user->daily_journal_limit ?? 5;
+        $todayCount = $user->tradeJournals()->whereDate('created_at', today())->count();
+
+        if ($todayCount >= $dailyLimit) {
+            return back()->withErrors(['limit' => "You have reached your daily journal limit of {$dailyLimit} entries."]);
+        }
+
+        $validated['user_id'] = $user->id;
 
         $journal = TradeJournal::create($validated);
 

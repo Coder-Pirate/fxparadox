@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('role', 20)->default('user');
             $table->boolean('is_approved')->default(false);
             $table->boolean('is_active')->default(true);
+            $table->unsignedTinyInteger('daily_journal_limit')->default(5);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->text('two_factor_secret')->nullable();

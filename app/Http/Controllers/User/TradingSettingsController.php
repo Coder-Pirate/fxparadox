@@ -17,6 +17,7 @@ class TradingSettingsController extends Controller
             'sessions' => $user->tradingSessions()->orderBy('name')->get(),
             'accounts' => $user->accountBalances()->orderBy('account_name')->get(),
             'checklistRules' => $user->checklistRules()->orderBy('sort_order')->get(),
+            'dailyJournalLimit' => $user->daily_journal_limit ?? 5,
         ]);
     }
 }

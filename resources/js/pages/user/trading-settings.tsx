@@ -1,6 +1,6 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
-import { Pencil, Trash2, Plus, Settings2, DollarSign, BarChart3, ClipboardCheck } from 'lucide-react';
+import { Pencil, Trash2, Plus, Settings2, DollarSign, BarChart3, ClipboardCheck, CalendarClock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -30,9 +30,10 @@ type Props = {
     sessions: TradingSession[];
     accounts: AccountBalance[];
     checklistRules: ChecklistRule[];
+    dailyJournalLimit: number;
 };
 
-export default function TradingSettings({ pairs, sessions, accounts, checklistRules }: Props) {
+export default function TradingSettings({ pairs, sessions, accounts, checklistRules, dailyJournalLimit }: Props) {
     return (
         <>
             <Head title="Trading Settings" />
@@ -41,6 +42,7 @@ export default function TradingSettings({ pairs, sessions, accounts, checklistRu
                 <SessionsSection sessions={sessions} />
                 <AccountsSection accounts={accounts} />
                 <ChecklistRulesSection rules={checklistRules} />
+                <DailyLimitSection dailyJournalLimit={dailyJournalLimit} />
             </div>
         </>
     );
@@ -570,6 +572,47 @@ function ChecklistRulesSection({ rules }: { rules: ChecklistRule[] }) {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+        </Card>
+    );
+}
+
+/* ─── Daily Journal Limit ─── */
+function DailyLimitSection({ dailyJournalLimit }: { dailyJournalLimit: number }) {
+    const form = useForm({ daily_journal_limit: dailyJournalLimit });
+
+    function handleSubmit(e: FormEvent) {
+        e.preventDefault();
+        form.patch('/user/settings/daily-journal-limit', { preserveScroll: true });
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <CalendarClock className="h-5 w-5" /> Daily Journal Limit
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <form onSubmit={handleSubmit} className="flex items-end gap-4">
+                    <div className="space-y-1">
+                        <Label htmlFor="daily-limit">Max entries per day</Label>
+                        <p className="text-muted-foreground text-sm">Set how many journal entries you can create each day (1–50).</p>
+                        <Input
+                            id="daily-limit"
+                            type="number"
+                            min={1}
+                            max={50}
+                            className="w-32"
+                            value={form.data.daily_journal_limit}
+                            onChange={(e) => form.setData('daily_journal_limit', Number(e.target.value))}
+                        />
+                        <InputError message={form.errors.daily_journal_limit} />
+                    </div>
+                    <Button type="submit" disabled={form.processing} size="sm">
+                        Save Limit
+                    </Button>
+                </form>
+            </CardContent>
         </Card>
     );
 }
