@@ -93,7 +93,7 @@ export default function EconomicCalendar({ events }: Props) {
     return (
         <>
             <Head title="Economic Calendar" />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-6 rounded-xl p-4">
                 <Card>
                     <CardHeader>
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -136,7 +136,7 @@ export default function EconomicCalendar({ events }: Props) {
                         </div>
 
                         {/* Filter bar */}
-                        <div className="mt-3 flex flex-wrap items-center gap-3 rounded-lg border bg-muted/30 px-4 py-3">
+                        <div className="mt-3 flex flex-col gap-3 rounded-lg border bg-muted/30 px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center">
                             <div className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
                                 <Filter className="h-4 w-4 text-muted-foreground" />
                                 Filters
@@ -146,7 +146,7 @@ export default function EconomicCalendar({ events }: Props) {
                             <select
                                 value={currencyFilter}
                                 onChange={(e) => setCurrencyFilter(e.target.value)}
-                                className="h-8 rounded-md border border-border bg-background px-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="h-8 w-full rounded-md border border-border bg-background px-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary sm:w-auto"
                             >
                                 <option value="All">Select currency...</option>
                                 {currencies.map((c) => (
@@ -155,7 +155,7 @@ export default function EconomicCalendar({ events }: Props) {
                             </select>
 
                             {/* Day-of-week filter */}
-                            <div className="flex items-center gap-1">
+                            <div className="flex flex-wrap items-center gap-1">
                                 {([1, 2, 3, 4, 5, 6, 0] as const).map((dow) => {
                                     const label = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dow];
                                     const isToday = dow === todayDow;
@@ -182,7 +182,7 @@ export default function EconomicCalendar({ events }: Props) {
                             {(currencyFilter !== 'All' || dayFilter !== null) && (
                                 <button
                                     onClick={() => { setCurrencyFilter('All'); setDayFilter(null); }}
-                                    className="ml-auto text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                                    className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline sm:ml-auto"
                                 >
                                     Clear
                                 </button>
