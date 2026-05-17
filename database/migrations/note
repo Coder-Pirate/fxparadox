@@ -3,3 +3,7 @@ php artisan tinker --execute="DB::statement('ALTER TABLE account_balances ADD CO
 php artisan tinker --execute="DB::statement('ALTER TABLE users ADD COLUMN daily_journal_limit TINYINT UNSIGNED NOT NULL DEFAULT 5 AFTER is_active'); echo 'Done';"
 
 php artisan tinker --execute="DB::statement('ALTER TABLE trade_journals ADD COLUMN tags JSON NULL AFTER checklist'); echo 'Done';"
+
+php artisan tinker --execute="DB::statement('ALTER TABLE users ADD COLUMN default_risk_pct DECIMAL(5,2) NOT NULL DEFAULT 1.00 AFTER daily_journal_limit'); echo 'Done';"
+
+ 

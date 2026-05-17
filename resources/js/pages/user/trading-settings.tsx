@@ -31,9 +31,10 @@ type Props = {
     accounts: AccountBalance[];
     checklistRules: ChecklistRule[];
     dailyJournalLimit: number;
+    defaultRiskPct: number;
 };
 
-export default function TradingSettings({ pairs, sessions, accounts, checklistRules, dailyJournalLimit }: Props) {
+export default function TradingSettings({ pairs, sessions, accounts, checklistRules, dailyJournalLimit, defaultRiskPct }: Props) {
     return (
         <>
             <Head title="Trading Settings" />
@@ -43,6 +44,7 @@ export default function TradingSettings({ pairs, sessions, accounts, checklistRu
                 <AccountsSection accounts={accounts} />
                 <ChecklistRulesSection rules={checklistRules} />
                 <DailyLimitSection dailyJournalLimit={dailyJournalLimit} />
+                <DefaultRiskSection defaultRiskPct={defaultRiskPct} />
             </div>
         </>
     );
@@ -610,6 +612,71 @@ function DailyLimitSection({ dailyJournalLimit }: { dailyJournalLimit: number })
                     </div>
                     <Button type="submit" disabled={form.processing} size="sm">
                         Save Limit
+                    </Button>
+                </form>
+            </CardContent>
+        </Card>
+    );
+}
+
+/* ─── Default Risk Per Trade ─── */
+function DefaultRiskSection({ defaultRiskPct }: { defaultRiskPct: number }) {
+    const form = useForm({ default_risk_pct: Number(defaultRiskPct) });
+
+    function handleSubmit(e: FormEvent) {
+        e.preventDefault();
+        form.patch('/user/settings/default-risk', { preserveScroll: true });
+    }
+
+    const PRESETS = [0.5, 1, 1.5, 2, 2.5, 3, 5];
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" /> Default Risk Per Trade
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">
+                            This will be pre-selected on the Position Size Calculator when you open it.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            {PRESETS.map((r) => (
+                                <button
+                                    key={r}
+                                    type="button"
+                                    onClick={() => form.setData('default_risk_pct', r)}
+                                    className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                                        form.data.default_risk_pct === r
+                                            ? 'border-primary bg-primary text-primary-foreground'
+                                            : 'border-border bg-background hover:bg-muted'
+                                    }`}
+                                >
+                                    {r}%
+                                </button>
+                            ))}
+                        </div>
+                        <div className="flex items-center gap-2 pt-1">
+                            <Label htmlFor="default-risk" className="shrink-0 text-sm text-muted-foreground">Custom:</Label>
+                            <Input
+                                id="default-risk"
+                                type="number"
+                                step="0.1"
+                                min={0.1}
+                                max={100}
+                                className="w-28"
+                                value={form.data.default_risk_pct}
+                                onChange={(e) => form.setData('default_risk_pct', parseFloat(e.target.value) || 0)}
+                            />
+                            <span className="text-sm text-muted-foreground">%</span>
+                        </div>
+                        <InputError message={form.errors.default_risk_pct} />
+                    </div>
+                    <Button type="submit" disabled={form.processing} size="sm">
+                        Save Default Risk
                     </Button>
                 </form>
             </CardContent>

@@ -13,8 +13,9 @@ class PositionCalculatorController extends Controller
         $user = $request->user();
 
         return Inertia::render('user/position-calculator', [
-            'accounts' => $user->accountBalances()->orderBy('account_name')->get(['id', 'account_name', 'balance']),
-            'pairs'    => $user->tradingPairs()->orderBy('name')->pluck('name'),
+            'accounts'       => $user->accountBalances()->orderBy('account_name')->get(['id', 'account_name', 'balance']),
+            'pairs'          => $user->tradingPairs()->orderBy('name')->pluck('name'),
+            'defaultRiskPct' => $user->default_risk_pct ?? 1,
         ]);
     }
 }

@@ -36,6 +36,7 @@ type Account = { id: number; account_name: string; balance: number };
 type Props = {
     accounts: Account[];
     pairs: string[];
+    defaultRiskPct: number;
 };
 
 function getLotCategory(lots: number): { label: string; color: string } {
@@ -45,14 +46,15 @@ function getLotCategory(lots: number): { label: string; color: string } {
     return { label: 'Large position — double-check risk', color: 'text-red-600' };
 }
 
-export default function PositionCalculator({ accounts = [], pairs = [] }: Props) {
+export default function PositionCalculator({ accounts = [], pairs = [], defaultRiskPct = 1 }: Props) {
     const allPairs = pairs.length > 0 ? pairs : DEFAULT_PAIRS;
+    const parsedDefault = Number(defaultRiskPct);
 
     const [accountId, setAccountId] = useState(accounts[0]?.id.toString() ?? '');
     const [pair, setPair] = useState(allPairs[0] ?? 'EUR/USD');
-    const [riskPct, setRiskPct] = useState<number>(1);
-    const [customRisk, setCustomRisk] = useState('');
-    const [isCustomRisk, setIsCustomRisk] = useState(false);
+    const [riskPct, setRiskPct] = useState<number>(parsedDefault);
+    const [customRisk, setCustomRisk] = useState(RISK_PRESETS.includes(parsedDefault) ? '' : String(parsedDefault));
+    const [isCustomRisk, setIsCustomRisk] = useState(!RISK_PRESETS.includes(parsedDefault));
     const [stopLossPips, setStopLossPips] = useState('');
 
     const account = accounts.find((a) => a.id.toString() === accountId);

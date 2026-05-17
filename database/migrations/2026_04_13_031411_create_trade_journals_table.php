@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('mft_entry_image')->nullable();
             $table->string('lft_entry_image')->nullable();
             $table->string('red_news_time')->nullable();
+            $table->json('tags')->nullable();
             $table->timestamps();
         });
     }

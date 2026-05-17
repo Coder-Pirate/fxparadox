@@ -18,6 +18,7 @@ class TradingSettingsController extends Controller
             'accounts' => $user->accountBalances()->orderBy('account_name')->get(),
             'checklistRules' => $user->checklistRules()->orderBy('sort_order')->get(),
             'dailyJournalLimit' => $user->daily_journal_limit ?? 5,
+            'defaultRiskPct'   => $user->default_risk_pct ?? 1,
         ]);
     }
 }
