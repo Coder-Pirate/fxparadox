@@ -32,6 +32,8 @@
 
         @php
             $favicon = \App\Models\SiteContent::getValue('settings', 'site_favicon');
+            $siteTitle = \App\Models\SiteContent::getValue('settings', 'site_title');
+            $siteSubtitle = \App\Models\SiteContent::getValue('settings', 'site_subtitle');
         @endphp
         @if($favicon)
             <link rel="icon" href="/storage/{{ $favicon }}" type="image/png">
@@ -50,7 +52,7 @@
         @viteReactRefresh
         @vite(['resources/css/app.css', 'resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
         <x-inertia::head>
-            <title>FX Paradox</title>
+            <title>{{ $siteTitle && $siteSubtitle ? $siteTitle . ' - ' . $siteSubtitle : ($siteTitle ?: 'FX Paradox') }}</title>
         </x-inertia::head>
     </head>
     <body class="font-sans antialiased">
