@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Exports\TradeJournalsExport;
 use App\Models\TradeJournal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TradeJournalController extends Controller
 {
@@ -271,5 +273,29 @@ class TradeJournalController extends Controller
 
         return redirect()->route('user.trade-journals.index')
             ->with('success', 'Trade journal entry deleted successfully.');
+    }
+
+    public function export(Request $request)
+    {
+        $query = $request->user()->tradeJournals()->with('accountBalance');
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('pair', 'like', "%{$search}%")
+                  ->orWhere('trade_comment', 'like', "%{$search}%");
+            });
+        }
+        if ($pair = $request->input('pair'))      $query->where('pair', $pair);
+        if ($session = $request->input('session')) $query->where('session', $session);
+        if ($result = $request->input('result'))   $query->where('result', $result);
+        if ($direction = $request->input('direction')) $query->where('direction', $direction);
+        if ($dateFrom = $request->input('date_from')) $query->whereDate('trade_date', '>=', $dateFrom);
+        if ($dateTo = $request->input('date_to'))     $query->whereDate('trade_date', '<=', $dateTo);
+
+        $journals = $query->orderByDesc('trade_date')->orderByDesc('created_at')->get();
+
+        $filename = 'trade-journal-' . now()->format('Y-m-d') . '.xlsx';
+
+        return Excel::download(new TradeJournalsExport($journals), $filename);
     }
 }

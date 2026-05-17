@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
-import { ArrowLeft, Pencil, ZoomIn, ZoomOut, RotateCcw, CheckCircle2, Circle } from 'lucide-react';
+import { ArrowLeft, Pencil, ZoomIn, ZoomOut, RotateCcw, CheckCircle2, Circle, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -119,6 +119,36 @@ export default function ShowTradeJournal({ journal }: Props) {
                                         <span className="text-sm">{rule}</span>
                                     </div>
                                 ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+
+                {/* Tags / Mistakes Card */}
+                {journal.tags && journal.tags.length > 0 && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-lg">
+                                <Tag className="h-4 w-4" /> Tags &amp; Mistakes
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="flex flex-wrap gap-2">
+                                {journal.tags.map((tag) => {
+                                    const isMistake = ['FOMO', 'Revenge Trade', 'Over-leveraged', 'Early Entry', 'Late Entry', 'Missed SL', 'Moved SL'].includes(tag);
+                                    return (
+                                        <Badge
+                                            key={tag}
+                                            className={isMistake
+                                                ? 'border-red-300 bg-red-100 text-red-700 dark:border-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                                : 'border-blue-300 bg-blue-100 text-blue-700 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                            }
+                                            variant="outline"
+                                        >
+                                            {tag}
+                                        </Badge>
+                                    );
+                                })}
                             </div>
                         </CardContent>
                     </Card>

@@ -68,6 +68,7 @@ Route::middleware(['auth', 'verified', 'approved', 'role:user'])->prefix('user')
     Route::get('forex-news', ForexNewsController::class)->name('forex-news');
     Route::get('economic-calendar', EconomicCalendarController::class)->name('economic-calendar');
     Route::resource('trade-journals', TradeJournalController::class);
+    Route::get('trade-journals-export', [TradeJournalController::class, 'export'])->name('trade-journals.export');
     Route::resource('templers', TemplerController::class);
 
     // Trading settings

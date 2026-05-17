@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Plus, Pencil, Trash2, Image, Eye, ZoomIn, ZoomOut, RotateCcw, Search, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Image, Eye, ZoomIn, ZoomOut, RotateCcw, Search, X, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -131,12 +131,27 @@ export default function TradeJournalIndex({ journals, filters, availablePairs, a
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between">
                         <CardTitle>Trade Journal</CardTitle>
-                        <Link href="/user/trade-journals/create">
-                            <Button size="sm">
-                                <Plus className="mr-1 h-4 w-4" />
-                                New Trade
-                            </Button>
-                        </Link>
+                        <div className="flex items-center gap-2">
+                            <a
+                                href={`/user/trade-journals-export?${new URLSearchParams(
+                                    Object.fromEntries(
+                                        Object.entries({ search, pair, session, result, direction, date_from: dateFrom, date_to: dateTo })
+                                            .filter(([, v]) => v !== '')
+                                    )
+                                ).toString()}`}
+                            >
+                                <Button size="sm" variant="outline">
+                                    <FileDown className="mr-1 h-4 w-4" />
+                                    Export Excel
+                                </Button>
+                            </a>
+                            <Link href="/user/trade-journals/create">
+                                <Button size="sm">
+                                    <Plus className="mr-1 h-4 w-4" />
+                                    New Trade
+                                </Button>
+                            </Link>
+                        </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {/* Filters */}
