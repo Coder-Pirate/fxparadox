@@ -29,6 +29,12 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
 const TRENDS = ['Bullish', 'Bearish', 'Ranging', 'Consolidation'];
 
+const TRADE_TAGS = [
+    'FOMO', 'Revenge Trade', 'Over-leveraged', 'Early Entry', 'Late Entry',
+    'News Trade', 'Missed SL', 'Moved SL', 'Setup A', 'Setup B',
+    'HTF Confluency', 'Break of Structure', 'Liquidity Grab', 'Fair Value Gap',
+];
+
 type TradeJournalFormData = {
     _method?: string;
     account_balance_id: string;
@@ -52,6 +58,7 @@ type TradeJournalFormData = {
     remove_lft_entry_image: boolean;
     red_news_time: string;
     checklist: string[];
+    tags: string[];
 };
 
 type Props = {
@@ -113,6 +120,7 @@ export default function TradeJournalForm({ journal, submitUrl, pairs, sessions, 
         remove_lft_entry_image: false,
         red_news_time: journal?.red_news_time ?? '',
         checklist: journal?.checklist ?? [],
+        tags: journal?.tags ?? [],
     });
 
     function handleDateChange(value: string) {
@@ -414,6 +422,42 @@ export default function TradeJournalForm({ journal, submitUrl, pairs, sessions, 
                                 </div>
                             );
                         })}
+                    </div>
+
+                    {/* Trade Tags / Mistakes */}
+                    <div className="space-y-3">
+                        <Label>Trade Tags / Mistakes</Label>
+                        <div className="flex flex-wrap gap-2">
+                            {TRADE_TAGS.map((tag) => {
+                                const isSelected = data.tags.includes(tag);
+                                return (
+                                    <button
+                                        key={tag}
+                                        type="button"
+                                        onClick={() => {
+                                            if (isSelected) {
+                                                setData('tags', data.tags.filter((t) => t !== tag));
+                                            } else {
+                                                setData('tags', [...data.tags, tag]);
+                                            }
+                                        }}
+                                        className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                                            isSelected
+                                                ? 'border-primary bg-primary text-primary-foreground'
+                                                : 'border-border bg-background text-foreground hover:bg-muted'
+                                        }`}
+                                    >
+                                        {tag}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        {data.tags.length > 0 && (
+                            <p className="text-xs text-muted-foreground">
+                                {data.tags.length} tag{data.tags.length !== 1 ? 's' : ''} selected
+                            </p>
+                        )}
+                        <InputError message={errors.tags} />
                     </div>
 
                     {/* Row 6: Trade Comment */}

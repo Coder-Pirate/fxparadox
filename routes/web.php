@@ -15,6 +15,7 @@ use App\Http\Controllers\User\TemplerController;
 use App\Http\Controllers\User\TradeJournalController;
 use App\Http\Controllers\User\TradingPairController;
 use App\Http\Controllers\User\TradingSessionController;
+use App\Http\Controllers\User\PositionCalculatorController;
 use App\Http\Controllers\User\TradingSettingsController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -70,6 +71,7 @@ Route::middleware(['auth', 'verified', 'approved', 'role:user'])->prefix('user')
     Route::resource('templers', TemplerController::class);
 
     // Trading settings
+    Route::get('position-calculator', PositionCalculatorController::class)->name('position-calculator');
     Route::get('trading-settings', TradingSettingsController::class)->name('trading-settings');
     Route::resource('trading-pairs', TradingPairController::class)->only(['store', 'update', 'destroy']);
     Route::resource('trading-sessions', TradingSessionController::class)->only(['store', 'update', 'destroy']);

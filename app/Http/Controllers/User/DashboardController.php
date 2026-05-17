@@ -26,6 +26,18 @@ class DashboardController extends Controller
         $totalLoss = $journals->clone()->where('result', 'loss')->sum('profit_loss_amount');
         $netPnl = $totalProfit - $totalLoss;
 
+        // Advanced stats
+        $profitFactor = $totalLoss > 0 ? round($totalProfit / $totalLoss, 2) : ($totalProfit > 0 ? 99.99 : 0);
+        $avgWin = $winTrades > 0 ? round($totalProfit / $winTrades, 2) : 0;
+        $avgLoss = $lossTrades > 0 ? round($totalLoss / $lossTrades, 2) : 0;
+        $streaks = $this->calcStreaks($user);
+
+        // Checklist compliance
+        $checklistCompliance = $this->calcChecklistCompliance($user);
+
+        // Equity curve
+        $equityCurve = $this->calcEquityCurve($user);
+
         // Account balances
         $accounts = $user->accountBalances()->get(['id', 'account_name', 'balance', 'starting_balance']);
 
@@ -74,11 +86,128 @@ class DashboardController extends Controller
                 'totalLoss' => (float) $totalLoss,
                 'netPnl' => (float) $netPnl,
             ],
+            'advancedStats' => [
+                'profitFactor' => $profitFactor,
+                'avgWin' => (float) $avgWin,
+                'avgLoss' => (float) $avgLoss,
+                'maxWinStreak' => $streaks['maxWin'],
+                'maxLossStreak' => $streaks['maxLoss'],
+            ],
+            'checklistCompliance' => $checklistCompliance,
+            'equityCurve' => $equityCurve,
             'accounts' => $accounts,
             'pnlPeriods' => $pnlPeriods,
             'dailySummary' => $dailySummary,
             'currentMonth' => $month,
         ]);
+    }
+
+    private function calcStreaks($user): array
+    {
+        $trades = $user->tradeJournals()
+            ->whereNotNull('result')
+            ->orderBy('trade_date')
+            ->orderBy('created_at')
+            ->pluck('result')
+            ->toArray();
+
+        $maxWin = 0; $maxLoss = 0;
+        $curWin = 0; $curLoss = 0;
+
+        foreach ($trades as $result) {
+            if ($result === 'profit') {
+                $curWin++;
+                $curLoss = 0;
+                $maxWin = max($maxWin, $curWin);
+            } else {
+                $curLoss++;
+                $curWin = 0;
+                $maxLoss = max($maxLoss, $curLoss);
+            }
+        }
+
+        return ['maxWin' => $maxWin, 'maxLoss' => $maxLoss];
+    }
+
+    private function calcChecklistCompliance($user): array
+    {
+        $totalRules = $user->checklistRules()->count();
+
+        if ($totalRules === 0) {
+            return ['score' => null, 'fullWinRate' => null, 'fullTrades' => 0, 'partialWinRate' => null, 'partialTrades' => 0];
+        }
+
+        $trades = $user->tradeJournals()
+            ->whereNotNull('result')
+            ->select('result', 'checklist')
+            ->get();
+
+        if ($trades->isEmpty()) {
+            return ['score' => null, 'fullWinRate' => null, 'fullTrades' => 0, 'partialWinRate' => null, 'partialTrades' => 0];
+        }
+
+        $totalChecked = 0; $totalPossible = 0;
+        $fullWins = 0; $fullTrades = 0;
+        $partialWins = 0; $partialTrades = 0;
+
+        foreach ($trades as $trade) {
+            $checklist = is_array($trade->checklist) ? $trade->checklist : [];
+            $checked = count($checklist);
+            $totalChecked += $checked;
+            $totalPossible += $totalRules;
+
+            if ($checked >= $totalRules) {
+                $fullTrades++;
+                if ($trade->result === 'profit') $fullWins++;
+            } else {
+                $partialTrades++;
+                if ($trade->result === 'profit') $partialWins++;
+            }
+        }
+
+        return [
+            'score' => $totalPossible > 0 ? round(($totalChecked / $totalPossible) * 100, 1) : 0,
+            'fullWinRate' => $fullTrades > 0 ? round(($fullWins / $fullTrades) * 100, 1) : null,
+            'fullTrades' => $fullTrades,
+            'partialWinRate' => $partialTrades > 0 ? round(($partialWins / $partialTrades) * 100, 1) : null,
+            'partialTrades' => $partialTrades,
+        ];
+    }
+
+    private function calcEquityCurve($user): array
+    {
+        $accounts = $user->accountBalances()->get(['id', 'account_name', 'starting_balance']);
+        $curves = [];
+
+        foreach ($accounts as $account) {
+            $trades = $user->tradeJournals()
+                ->where('account_balance_id', $account->id)
+                ->whereNotNull('profit_loss_amount')
+                ->orderBy('trade_date')
+                ->orderBy('created_at')
+                ->select('trade_date', 'result', 'profit_loss_amount')
+                ->get();
+
+            $balance = (float) $account->starting_balance;
+            $points = [['date' => null, 'balance' => $balance]];
+
+            foreach ($trades as $trade) {
+                $amount = $trade->result === 'loss'
+                    ? -abs((float) $trade->profit_loss_amount)
+                    : abs((float) $trade->profit_loss_amount);
+                $balance = round($balance + $amount, 2);
+                $points[] = ['date' => $trade->trade_date->format('Y-m-d'), 'balance' => $balance];
+            }
+
+            $curves[] = [
+                'accountId' => $account->id,
+                'accountName' => $account->account_name,
+                'startingBalance' => (float) $account->starting_balance,
+                'points' => $points,
+            ];
+        }
+
+        return $curves;
     }
 
     private function calcPnl($user, $request): array

@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { BookText, CalendarClock, LayoutGrid, Shield, Users, UserCheck, Settings2, FileImage, Globe } from 'lucide-react';
+import { BookText, CalendarClock, Calculator, LayoutGrid, Shield, Users, UserCheck, Settings2, FileImage, Globe } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -33,6 +33,7 @@ function getNavItems(role: UserRole): NavItem[] {
                 { title: 'Trade Journal', href: '/user/trade-journals', icon: BookText },
                 { title: 'Templers', href: '/user/templers', icon: FileImage },
                 { title: 'Economic Calendar', href: '/user/economic-calendar', icon: CalendarClock },
+                { title: 'Position Calculator', href: '/user/position-calculator', icon: Calculator },
                 { title: 'Trading Settings', href: '/user/trading-settings', icon: Settings2 },
             ];
     }

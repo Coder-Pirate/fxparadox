@@ -12,8 +12,23 @@ import {
     ChevronRight,
     ArrowRightLeft,
     TrendingUp,
+    TrendingDown,
+    Award,
+    AlertTriangle,
+    CheckSquare,
+    Zap,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    ReferenceLine,
+} from 'recharts';
 
 type DayTrade = {
     id: number;
@@ -52,6 +67,30 @@ type Account = {
     starting_balance: number;
 };
 
+type AdvancedStats = {
+    profitFactor: number;
+    avgWin: number;
+    avgLoss: number;
+    maxWinStreak: number;
+    maxLossStreak: number;
+};
+
+type ChecklistCompliance = {
+    score: number | null;
+    fullWinRate: number | null;
+    fullTrades: number;
+    partialWinRate: number | null;
+    partialTrades: number;
+};
+
+type EquityCurvePoint = { date: string | null; balance: number };
+type EquityCurve = {
+    accountId: number;
+    accountName: string;
+    startingBalance: number;
+    points: EquityCurvePoint[];
+};
+
 type Props = {
     stats: {
         totalTrades: number;
@@ -63,6 +102,9 @@ type Props = {
         totalLoss: number;
         netPnl: number;
     };
+    advancedStats: AdvancedStats;
+    checklistCompliance: ChecklistCompliance;
+    equityCurve: EquityCurve[];
     accounts: Account[];
     pnlPeriods: PnlPeriods;
     dailySummary: DaySummary[];
@@ -70,6 +112,8 @@ type Props = {
 };
 
 const defaultStats = { totalTrades: 0, winTrades: 0, lossTrades: 0, winRate: 0, daysTraded: 0, totalProfit: 0, totalLoss: 0, netPnl: 0 };
+const defaultAdvancedStats: AdvancedStats = { profitFactor: 0, avgWin: 0, avgLoss: 0, maxWinStreak: 0, maxLossStreak: 0 };
+const defaultCompliance: ChecklistCompliance = { score: null, fullWinRate: null, fullTrades: 0, partialWinRate: null, partialTrades: 0 };
 const defaultPnlStat: PnlStat = { net: 0, profit: 0, loss: 0, trades: 0 };
 const defaultPnlPeriods: PnlPeriods = { today: defaultPnlStat, yesterday: defaultPnlStat, lastWeek: defaultPnlStat, lastMonth: defaultPnlStat, custom: null, customFrom: null, customTo: null };
 
@@ -94,8 +138,67 @@ function PnlSubtext({ stat }: { stat: PnlStat }) {
     );
 }
 
-export default function UserDashboard({ stats: rawStats, accounts = [], pnlPeriods: rawPnl, dailySummary = [], currentMonth }: Props) {
+function EquityCurveChart({ curve }: { curve: EquityCurve }) {
+    const { points, startingBalance } = curve;
+    if (points.length < 2) {
+        return (
+            <div className="flex h-48 items-center justify-center text-sm text-muted-foreground">
+                Log trades to see your equity curve
+            </div>
+        );
+    }
+
+    const last = points[points.length - 1].balance;
+    const isPositive = last >= startingBalance;
+    const color = isPositive ? '#16a34a' : '#dc2626';
+
+    const chartData = points.map((p, i) => ({
+        index: i,
+        balance: p.balance,
+        date: p.date ?? 'Start',
+    }));
+
+    return (
+        <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.15} />
+                <XAxis
+                    dataKey="date"
+                    tick={{ fontSize: 10, fill: 'currentColor', opacity: 0.5 }}
+                    tickLine={false}
+                    axisLine={false}
+                    interval="preserveStartEnd"
+                />
+                <YAxis
+                    tick={{ fontSize: 10, fill: 'currentColor', opacity: 0.5 }}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(v) => `$${v.toLocaleString()}`}
+                    width={70}
+                />
+                <Tooltip
+                    formatter={(v) => [`$${Number(v).toFixed(2)}`, 'Balance']}
+                    labelFormatter={(label) => label === 'Start' ? 'Starting Balance' : `Date: ${label}`}
+                    contentStyle={{ fontSize: 12 }}
+                />
+                <ReferenceLine y={startingBalance} stroke="#94a3b8" strokeDasharray="4 4" strokeOpacity={0.6} />
+                <Line
+                    type="monotone"
+                    dataKey="balance"
+                    stroke={color}
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 4, fill: color }}
+                />
+            </LineChart>
+        </ResponsiveContainer>
+    );
+}
+
+export default function UserDashboard({ stats: rawStats, advancedStats: rawAdvanced, checklistCompliance: rawCompliance, equityCurve = [], accounts = [], pnlPeriods: rawPnl, dailySummary = [], currentMonth }: Props) {
     const stats = rawStats || defaultStats;
+    const advanced = rawAdvanced || defaultAdvancedStats;
+    const compliance = rawCompliance || defaultCompliance;
     const pnl = rawPnl || defaultPnlPeriods;
     const monthStr = currentMonth || new Date().toISOString().slice(0, 7);
     const [year, month] = monthStr.split('-').map(Number);
@@ -111,6 +214,7 @@ export default function UserDashboard({ stats: rawStats, accounts = [], pnlPerio
     const [pnlTab, setPnlTab] = useState<'today' | 'yesterday' | 'lastWeek' | 'lastMonth' | 'custom'>(
         pnl.customFrom && pnl.customTo ? 'custom' : 'today'
     );
+    const [selectedCurveAccount, setSelectedCurveAccount] = useState<number>(equityCurve[0]?.accountId ?? 0);
 
     // Build calendar grid
     const calendarDays = useMemo(() => {
@@ -208,6 +312,70 @@ export default function UserDashboard({ stats: rawStats, accounts = [], pnlPerio
                                 {' / '}
                                 <span className="text-red-600">-${stats.totalLoss.toFixed(2)}</span>
                             </p>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Advanced Stats Row */}
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Profit Factor</CardTitle>
+                            <Zap className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className={`text-2xl font-bold ${advanced.profitFactor >= 1.5 ? 'text-green-600' : advanced.profitFactor >= 1 ? 'text-yellow-600' : 'text-red-600'}`}>
+                                {advanced.profitFactor === 99.99 ? '∞' : advanced.profitFactor.toFixed(2)}
+                            </div>
+                            <p className="text-xs text-muted-foreground">Gross profit ÷ gross loss</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Avg Win</CardTitle>
+                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-green-600">
+                                ${advanced.avgWin.toFixed(2)}
+                            </div>
+                            <p className="text-xs text-muted-foreground">Per winning trade</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Avg Loss</CardTitle>
+                            <TrendingDown className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-red-600">
+                                ${advanced.avgLoss.toFixed(2)}
+                            </div>
+                            <p className="text-xs text-muted-foreground">Per losing trade</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Win Streak</CardTitle>
+                            <Award className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-green-600">{advanced.maxWinStreak}</div>
+                            <p className="text-xs text-muted-foreground">Best consecutive wins</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Loss Streak</CardTitle>
+                            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-red-600">{advanced.maxLossStreak}</div>
+                            <p className="text-xs text-muted-foreground">Worst consecutive losses</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -332,6 +500,111 @@ export default function UserDashboard({ stats: rawStats, accounts = [], pnlPerio
                                             <PnlSubtext stat={pnl.custom} />
                                         </div>
                                     )}
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Equity Curve + Checklist Compliance + Position Size */}
+                <div className="grid gap-4 lg:grid-cols-3">
+                    {/* Equity Curve */}
+                    <Card className="lg:col-span-2">
+                        <CardHeader className="pb-3">
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                <div className="flex items-center gap-2">
+                                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                                    <CardTitle className="text-sm font-medium">Equity Curve</CardTitle>
+                                </div>
+                                {equityCurve.length > 1 && (
+                                    <div className="flex flex-wrap gap-1">
+                                        {equityCurve.map((c) => (
+                                            <button
+                                                key={c.accountId}
+                                                onClick={() => setSelectedCurveAccount(c.accountId)}
+                                                className={`rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                                                    selectedCurveAccount === c.accountId
+                                                        ? 'bg-primary text-primary-foreground'
+                                                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                                }`}
+                                            >
+                                                {c.accountName}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            {equityCurve.length === 0 ? (
+                                <div className="flex h-48 items-center justify-center text-sm text-muted-foreground">
+                                    Add an account and log trades to see your equity curve
+                                </div>
+                            ) : (
+                                (() => {
+                                    const curve = equityCurve.find((c) => c.accountId === selectedCurveAccount) ?? equityCurve[0];
+                                    const last = curve.points[curve.points.length - 1]?.balance ?? curve.startingBalance;
+                                    const change = last - curve.startingBalance;
+                                    return (
+                                        <>
+                                            <div className="mb-3 flex items-baseline gap-3">
+                                                <span className="text-2xl font-bold">${last.toFixed(2)}</span>
+                                                <span className={`text-sm font-semibold ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                                    {change >= 0 ? '+' : '-'}${Math.abs(change).toFixed(2)}
+                                                </span>
+                                                <span className="text-xs text-muted-foreground">from ${curve.startingBalance.toFixed(2)}</span>
+                                            </div>
+                                            <EquityCurveChart curve={curve} />
+                                        </>
+                                    );
+                                })()
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Checklist Compliance */}
+                    <Card>
+                        <CardHeader className="pb-3">
+                            <div className="flex items-center gap-2">
+                                <CheckSquare className="h-4 w-4 text-muted-foreground" />
+                                <CardTitle className="text-sm font-medium">Checklist Compliance</CardTitle>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            {compliance.score === null ? (
+                                <p className="text-sm text-muted-foreground">
+                                    Add checklist rules in Trading Settings to track compliance.
+                                </p>
+                            ) : (
+                                <div className="space-y-4">
+                                    {/* Compliance score ring */}
+                                    <div className="flex flex-col items-center gap-1 py-2">
+                                        <span className={`text-4xl font-bold ${compliance.score >= 80 ? 'text-green-600' : compliance.score >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>
+                                            {compliance.score}%
+                                        </span>
+                                        <p className="text-xs text-muted-foreground">avg rules checked per trade</p>
+                                    </div>
+                                    {/* Win rate comparison */}
+                                    <div className="space-y-2">
+                                        {compliance.fullTrades > 0 && (
+                                            <div className="flex items-center justify-between rounded-md bg-green-50 px-3 py-2 dark:bg-green-950/20">
+                                                <div>
+                                                    <p className="text-xs font-medium text-green-700 dark:text-green-400">Full compliance</p>
+                                                    <p className="text-[10px] text-muted-foreground">{compliance.fullTrades} trade{compliance.fullTrades !== 1 ? 's' : ''}</p>
+                                                </div>
+                                                <span className="text-lg font-bold text-green-600">{compliance.fullWinRate ?? 0}%</span>
+                                            </div>
+                                        )}
+                                        {compliance.partialTrades > 0 && (
+                                            <div className="flex items-center justify-between rounded-md bg-red-50 px-3 py-2 dark:bg-red-950/20">
+                                                <div>
+                                                    <p className="text-xs font-medium text-red-700 dark:text-red-400">Partial compliance</p>
+                                                    <p className="text-[10px] text-muted-foreground">{compliance.partialTrades} trade{compliance.partialTrades !== 1 ? 's' : ''}</p>
+                                                </div>
+                                                <span className="text-lg font-bold text-red-600">{compliance.partialWinRate ?? 0}%</span>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             )}
                         </CardContent>

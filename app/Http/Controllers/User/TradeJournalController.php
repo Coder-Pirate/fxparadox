@@ -109,6 +109,8 @@ class TradeJournalController extends Controller
             'red_news_time' => ['nullable', 'string', 'max:100'],
             'checklist' => ['nullable', 'array'],
             'checklist.*' => ['string', 'max:100'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['string', 'max:50'],
         ]);
 
         // Handle image uploads
@@ -192,6 +194,8 @@ class TradeJournalController extends Controller
             'red_news_time' => ['nullable', 'string', 'max:100'],
             'checklist' => ['nullable', 'array'],
             'checklist.*' => ['string', 'max:100'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['string', 'max:50'],
         ]);
 
         // Handle image uploads and removals
