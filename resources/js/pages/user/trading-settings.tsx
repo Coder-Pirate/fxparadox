@@ -699,17 +699,22 @@ const DEFAULT_PIP_VALUES: Record<string, number> = {
 };
 
 function PipValuesSection({ pairs, pipValues }: { pairs: TradingPair[]; pipValues: Record<string, number> }) {
-    const initial = Object.fromEntries(
-        pairs.map((p) => [p.name, pipValues[p.name] ?? DEFAULT_PIP_VALUES[p.name] ?? 10])
-    ) as Record<string, number>;
-
-    const { data, setData, patch, processing, errors } = useForm<{ pip_values: Record<string, number> }>({
-        pip_values: initial,
-    });
+    const [values, setValues] = useState<Record<string, string>>(() =>
+        Object.fromEntries(
+            pairs.map((p) => [p.name, String(pipValues[p.name] ?? DEFAULT_PIP_VALUES[p.name] ?? 10)])
+        )
+    );
+    const [processing, setProcessing] = useState(false);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        patch(route('pip-values.update'));
+        const numeric = Object.fromEntries(
+            Object.entries(values).map(([k, v]) => [k, parseFloat(v) || 10])
+        );
+        setProcessing(true);
+        router.patch(route('pip-values.update'), { pip_values: numeric }, {
+            onFinish: () => setProcessing(false),
+        });
     };
 
     return (
@@ -735,15 +740,11 @@ function PipValuesSection({ pairs, pipValues }: { pairs: TradingPair[]; pipValue
                                         max="10000"
                                         step="0.01"
                                         className="w-24"
-                                        value={data.pip_values[p.name] ?? 10}
+                                        value={values[p.name] ?? ''}
                                         onChange={(e) =>
-                                            setData('pip_values', {
-                                                ...data.pip_values,
-                                                [p.name]: parseFloat(e.target.value) || 10,
-                                            })
+                                            setValues((prev) => ({ ...prev, [p.name]: e.target.value }))
                                         }
                                     />
-                                    {errors['pip_values'] && <InputError message={errors['pip_values'] as unknown as string} />}
                                 </div>
                             ))}
                         </div>
