@@ -712,7 +712,7 @@ function PipValuesSection({ pairs, pipValues }: { pairs: TradingPair[]; pipValue
             Object.entries(values).map(([k, v]) => [k, parseFloat(v) || 10])
         );
         setProcessing(true);
-        router.patch(route('pip-values.update'), { pip_values: numeric }, {
+        router.patch('/user/settings/pip-values', { pip_values: numeric }, {
             onFinish: () => setProcessing(false),
         });
     };
