@@ -17,10 +17,8 @@ const PIP_VALUES: Record<string, number> = {
     'GBP/JPY': 10, 'GBP/AUD': 10, 'GBP/CAD': 10,
     'AUD/JPY': 10, 'AUD/CAD': 10, 'CAD/JPY': 10,
     'XAU/USD': 10,
-    'US30': 1,
-    'NAS100': 1,
-    'GER40': 1,
-    'UK100': 1,
+    'US30': 1, 'NAS100': 1, 'NDX100': 0.1,
+    'GER40': 1, 'UK100': 1,
 };
 
 const DEFAULT_PAIRS = [
