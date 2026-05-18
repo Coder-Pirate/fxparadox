@@ -37,6 +37,7 @@ type Props = {
     accounts: Account[];
     pairs: string[];
     defaultRiskPct: number;
+    customPipValues: Record<string, number>;
 };
 
 function getLotCategory(lots: number): { label: string; color: string } {
@@ -46,8 +47,9 @@ function getLotCategory(lots: number): { label: string; color: string } {
     return { label: 'Large position — double-check risk', color: 'text-red-600' };
 }
 
-export default function PositionCalculator({ accounts = [], pairs = [], defaultRiskPct = 1 }: Props) {
+export default function PositionCalculator({ accounts = [], pairs = [], defaultRiskPct = 1, customPipValues = {} }: Props) {
     const allPairs = pairs.length > 0 ? pairs : DEFAULT_PAIRS;
+    const effectivePipValues: Record<string, number> = { ...PIP_VALUES, ...customPipValues };
     const parsedDefault = Number(defaultRiskPct);
 
     const [accountId, setAccountId] = useState(accounts[0]?.id.toString() ?? '');
@@ -63,7 +65,7 @@ export default function PositionCalculator({ accounts = [], pairs = [], defaultR
     const effectiveRisk = isCustomRisk ? parseFloat(customRisk || '0') : riskPct;
     const riskAmount = balance > 0 && effectiveRisk > 0 ? (balance * effectiveRisk) / 100 : 0;
 
-    const pipValue = PIP_VALUES[pair] ?? 10;
+    const pipValue = effectivePipValues[pair] ?? 10;
     const slPips = parseFloat(stopLossPips || '0');
 
     const result = useMemo(() => {

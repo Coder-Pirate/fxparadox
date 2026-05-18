@@ -80,6 +80,7 @@ Route::middleware(['auth', 'verified', 'approved', 'role:user'])->prefix('user')
     Route::resource('checklist-rules', ChecklistRuleController::class)->only(['store', 'update', 'destroy']);
     Route::patch('settings/daily-journal-limit', [\App\Http\Controllers\User\DailyJournalLimitController::class, 'update'])->name('daily-journal-limit.update');
     Route::patch('settings/default-risk', [\App\Http\Controllers\User\DefaultRiskController::class, 'update'])->name('default-risk.update');
+    Route::patch('settings/pip-values', [\App\Http\Controllers\User\PipValuesController::class, 'update'])->name('pip-values.update');
 });
 
 require __DIR__.'/settings.php';

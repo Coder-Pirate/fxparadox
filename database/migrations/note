@@ -6,4 +6,5 @@ php artisan tinker --execute="DB::statement('ALTER TABLE trade_journals ADD COLU
 
 php artisan tinker --execute="DB::statement('ALTER TABLE users ADD COLUMN default_risk_pct DECIMAL(5,2) NOT NULL DEFAULT 1.00 AFTER daily_journal_limit'); echo 'Done';"
 
- 
+php artisan tinker --execute="DB::statement('ALTER TABLE users ADD COLUMN pip_values JSON NULL AFTER default_risk_pct'); echo 'Done';"
+

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->unsignedTinyInteger('daily_journal_limit')->default(5);
             $table->decimal('default_risk_pct', 5, 2)->default(1.00);
+            $table->json('pip_values')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->text('two_factor_secret')->nullable();

@@ -32,9 +32,10 @@ type Props = {
     checklistRules: ChecklistRule[];
     dailyJournalLimit: number;
     defaultRiskPct: number;
+    pipValues: Record<string, number>;
 };
 
-export default function TradingSettings({ pairs, sessions, accounts, checklistRules, dailyJournalLimit, defaultRiskPct }: Props) {
+export default function TradingSettings({ pairs, sessions, accounts, checklistRules, dailyJournalLimit, defaultRiskPct, pipValues }: Props) {
     return (
         <>
             <Head title="Trading Settings" />
@@ -45,6 +46,7 @@ export default function TradingSettings({ pairs, sessions, accounts, checklistRu
                 <ChecklistRulesSection rules={checklistRules} />
                 <DailyLimitSection dailyJournalLimit={dailyJournalLimit} />
                 <DefaultRiskSection defaultRiskPct={defaultRiskPct} />
+                <PipValuesSection pairs={pairs} pipValues={pipValues} />
             </div>
         </>
     );
@@ -677,6 +679,76 @@ function DefaultRiskSection({ defaultRiskPct }: { defaultRiskPct: number }) {
                     </div>
                     <Button type="submit" disabled={form.processing} size="sm">
                         Save Default Risk
+                    </Button>
+                </form>
+            </CardContent>
+        </Card>
+    );
+}
+
+/* ─── Pip Values ─── */
+const DEFAULT_PIP_VALUES: Record<string, number> = {
+    'EUR/USD': 10, 'GBP/USD': 10, 'AUD/USD': 10, 'NZD/USD': 10,
+    'USD/JPY': 10, 'USD/CHF': 10, 'USD/CAD': 10, 'USD/SGD': 10,
+    'EUR/GBP': 10, 'EUR/JPY': 10, 'EUR/AUD': 10, 'EUR/CAD': 10,
+    'GBP/JPY': 10, 'GBP/AUD': 10, 'GBP/CAD': 10,
+    'AUD/JPY': 10, 'AUD/CAD': 10, 'CAD/JPY': 10,
+    'XAU/USD': 10,
+    'US30': 1, 'NAS100': 1, 'GER40': 1, 'UK100': 1,
+};
+
+function PipValuesSection({ pairs, pipValues }: { pairs: TradingPair[]; pipValues: Record<string, number> }) {
+    const initial = Object.fromEntries(
+        pairs.map((p) => [p.name, pipValues[p.name] ?? DEFAULT_PIP_VALUES[p.name] ?? 10])
+    ) as Record<string, number>;
+
+    const { data, setData, patch, processing, errors } = useForm<{ pip_values: Record<string, number> }>({
+        pip_values: initial,
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        patch(route('pip-values.update'));
+    };
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <DollarSign className="h-5 w-5" /> Pip Values ($ per pip per standard lot)
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {pairs.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">Add trading pairs first to configure pip values.</p>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+                            {pairs.map((p) => (
+                                <div key={p.name} className="flex items-center gap-2">
+                                    <label className="w-24 shrink-0 text-sm font-medium">{p.name}</label>
+                                    <span className="text-sm text-muted-foreground">$</span>
+                                    <Input
+                                        type="number"
+                                        min="0.01"
+                                        max="10000"
+                                        step="0.01"
+                                        className="w-24"
+                                        value={data.pip_values[p.name] ?? 10}
+                                        onChange={(e) =>
+                                            setData('pip_values', {
+                                                ...data.pip_values,
+                                                [p.name]: parseFloat(e.target.value) || 10,
+                                            })
+                                        }
+                                    />
+                                    {errors['pip_values'] && <InputError message={errors['pip_values'] as unknown as string} />}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    <Button type="submit" disabled={processing || pairs.length === 0} size="sm">
+                        Save Pip Values
                     </Button>
                 </form>
             </CardContent>

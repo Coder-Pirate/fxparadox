@@ -19,6 +19,7 @@ class TradingSettingsController extends Controller
             'checklistRules' => $user->checklistRules()->orderBy('sort_order')->get(),
             'dailyJournalLimit' => $user->daily_journal_limit ?? 5,
             'defaultRiskPct'   => $user->default_risk_pct ?? 1,
+            'pipValues'        => $user->pip_values ?? [],
         ]);
     }
 }
